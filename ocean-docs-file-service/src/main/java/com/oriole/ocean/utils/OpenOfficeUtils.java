@@ -1,9 +1,9 @@
 package com.oriole.ocean.utils;
 
-import org.jodconverter.OfficeDocumentConverter;
-import org.jodconverter.office.DefaultOfficeManagerBuilder;
-import org.jodconverter.office.OfficeException;
-import org.jodconverter.office.OfficeManager;
+import org.jodconverter.local.LocalConverter;
+import org.jodconverter.local.office.LocalOfficeManager;
+import org.jodconverter.core.office.OfficeException;
+import org.jodconverter.core.office.OfficeManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -33,13 +33,14 @@ public class OpenOfficeUtils {
      * @throws OfficeException
      */
     private OfficeManager getOfficeManager() throws OfficeException {
-        DefaultOfficeManagerBuilder builder = new DefaultOfficeManagerBuilder();
+        LocalOfficeManager.Builder builder = LocalOfficeManager.builder();
         //此处填写OpenOffice安装路径
         if (useOpenOffice) {
-            builder.setOfficeHome(OPENOFFICE_PATH);
+            builder.officeHome(OPENOFFICE_PATH);
         } else {
-            builder.setOfficeHome(LIBREOFFICE_PATH);
+            builder.officeHome(LIBREOFFICE_PATH);
         }
+        builder.install();
         OfficeManager officeManager = builder.build();
         //officeManager提供了开启OpenOffice的API服务
         officeManager.start();
@@ -57,8 +58,8 @@ public class OpenOfficeUtils {
             //设置转换后的文件存储路径，文件名
 
             //使用OfficeDocumentConverter类转换文件，其实核心就这一句
-            OfficeDocumentConverter converter = new OfficeDocumentConverter(manage);
-            converter.convert(inputTempFile, outputTempFile);
+            LocalConverter converter = LocalConverter.make(manage);
+            converter.convert(inputTempFile).to(outputTempFile).execute();
             return true;
         } catch (Exception e) {
             e.printStackTrace();
