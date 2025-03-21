@@ -1,8 +1,10 @@
 package com.oriole.ocean.common.po.mongo.comment;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper=false)
 public class CommentReplyEntity extends AbstractComment implements java.io.Serializable {
     private String replyBuildUsername;
     private String replyToCommentReplier;// 回复另一个回复时必填（被回复的回复者）

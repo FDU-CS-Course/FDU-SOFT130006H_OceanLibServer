@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
@@ -56,19 +57,23 @@ public class WebSecurityConfig {
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http
                 .securityContextRepository(securityRepository)
-                .authorizeExchange()
-                .pathMatchers(path).permitAll()
-                .pathMatchers(HttpMethod.OPTIONS).permitAll()
-                .pathMatchers("/userWalletService/**").hasAnyRole("USER","ADMIN")
-                .pathMatchers("/userInfoService/**").hasAnyRole("USER","ADMIN")
-                .pathMatchers("/userFunctionService/**").hasAnyRole("USER","ADMIN")
-                .anyExchange().authenticated()
-                .and()
-                .httpBasic()
-                .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
-                .accessDeniedHandler(accessDeniedHandler) //基于http的接口请求鉴权失败
-                .and().cors().configurationSource(corsConfigSource())
-                .and().csrf().disable(); //必须支持跨域
+                .authorizeExchange(authorize -> authorize
+                    .pathMatchers(path).permitAll()
+                    .pathMatchers(HttpMethod.OPTIONS).permitAll()
+                    .pathMatchers("/userWalletService/**").hasAnyRole("USER","ADMIN")
+                    .pathMatchers("/userInfoService/**").hasAnyRole("USER","ADMIN")
+                    .pathMatchers("/userFunctionService/**").hasAnyRole("USER","ADMIN")
+                    .anyExchange().authenticated()
+                )
+                .httpBasic(Customizer.withDefaults())
+                .exceptionHandling(handling -> handling
+                    .authenticationEntryPoint(authenticationEntryPoint)
+                    .accessDeniedHandler(accessDeniedHandler) //基于http的接口请求鉴权失败
+                ).cors( cors -> cors
+                    .configurationSource(corsConfigSource())
+                ).csrf( csrf -> csrf
+                        .disable()
+                ); //必须支持跨域
         return http.build();
     }
 

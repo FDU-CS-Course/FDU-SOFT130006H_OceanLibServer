@@ -1,6 +1,5 @@
 package com.oriole.ocean.common.service;
 
-import com.alibaba.fastjson.JSONObject;
 import com.oriole.ocean.common.enumerate.BehaviorExtraInfo;
 import com.oriole.ocean.common.enumerate.EvaluateType;
 import com.oriole.ocean.common.po.mongo.UserBehaviorEntity;

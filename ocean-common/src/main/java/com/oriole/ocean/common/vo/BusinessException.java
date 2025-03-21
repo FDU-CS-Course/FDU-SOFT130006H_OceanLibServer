@@ -1,7 +1,10 @@
 package com.oriole.ocean.common.vo;
 
 import com.oriole.ocean.common.enumerate.ResultCode;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
 public class BusinessException extends RuntimeException {
 
     private static final long serialVersionUID = -7480022450501760611L;
@@ -9,6 +12,7 @@ public class BusinessException extends RuntimeException {
     /**
      * 异常码
      */
+    @Getter
     private String code;
 
     /**
@@ -29,20 +33,9 @@ public class BusinessException extends RuntimeException {
         this.message = msg;
     }
 
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
     @Override
     public String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
 }

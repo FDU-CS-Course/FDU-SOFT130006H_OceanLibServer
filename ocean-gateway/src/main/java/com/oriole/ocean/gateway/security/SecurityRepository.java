@@ -1,6 +1,6 @@
 package com.oriole.ocean.gateway.security;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import com.oriole.ocean.gateway.tools.JwtUtils;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;

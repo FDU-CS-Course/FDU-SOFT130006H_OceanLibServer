@@ -1,6 +1,6 @@
 package com.oriole.ocean.controller;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import com.oriole.ocean.common.enumerate.*;
 import com.oriole.ocean.common.auth.AuthUser;
 import com.oriole.ocean.common.po.mongo.UserBehaviorEntity;
