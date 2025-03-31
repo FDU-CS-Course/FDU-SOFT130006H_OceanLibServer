@@ -1,23 +1,21 @@
 package com.oriole.ocean.service;
 
+import co.elastic.clients.elasticsearch.core.search.CompletionSuggester;
+import co.elastic.clients.elasticsearch.core.search.Suggester;
 import com.oriole.ocean.common.po.es.FileSearchEntity;
-import org.elasticsearch.common.unit.Fuzziness;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
-import org.elasticsearch.search.suggest.Suggest;
-import org.elasticsearch.search.suggest.SuggestBuilder;
-import org.elasticsearch.search.suggest.SuggestBuilders;
-import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
-import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
+import jakarta.annotation.Resource;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
+import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.HighlightQuery;
+import org.springframework.data.elasticsearch.core.query.highlight.Highlight;
+import org.springframework.data.elasticsearch.core.query.highlight.HighlightField;
+import org.springframework.data.elasticsearch.core.query.highlight.HighlightFieldParameters;
+import org.springframework.data.elasticsearch.core.suggest.response.Suggest;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -27,29 +25,50 @@ import java.util.List;
 public class ESearchServiceImpl {
 
     @Resource
-    private ElasticsearchRestTemplate elasticsearchRestTemplate;
+    private ElasticsearchOperations elasticsearchOperations;
 
     public SearchHits<FileSearchEntity> searchFile(String keywords, Integer page, Integer rows) {
-        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
-                .should(QueryBuilders.fuzzyQuery("analyzer_title", keywords).fuzziness(Fuzziness.AUTO))
-                .should(QueryBuilders.fuzzyQuery("analyzer_content", keywords).fuzziness(Fuzziness.AUTO))
-                .should(QueryBuilders.fuzzyQuery("analyzer_abstract_content", keywords).fuzziness(Fuzziness.AUTO))
-                .must(QueryBuilders.multiMatchQuery(keywords,"analyzer_title","analyzer_content","analyzer_abstract_content"))
-                .must(QueryBuilders.matchQuery("is_approved", "true"));//必须是已经被核准的才能被检索出来
 
+        HighlightFieldParameters highlightFieldParameters = HighlightFieldParameters.builder()
+                .withMatchedFields(
+                        "analyzer_title",
+                        "analyzer_abstract_content",
+                        "analyzer_content"
+                )
+                .withPreTags("<span class='highlight'>")
+                .withPostTags("</span>")
+                .build();
 
         //构建高亮查询
-        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
-                .withQuery(boolQueryBuilder)
-                .withHighlightFields(
-                        new HighlightBuilder.Field("analyzer_title"),
-                        new HighlightBuilder.Field("analyzer_abstract_content"),
-                        new HighlightBuilder.Field("analyzer_content"))
-                .withHighlightBuilder(new HighlightBuilder().preTags("<span class='highlight'>").postTags("</span>"))
-                .withPageable(PageRequest.of(page - 1, rows)).build();
+        Highlight highlight = new Highlight(
+            List.of(
+                new HighlightField("analyzer_title",
+                        highlightFieldParameters),
+                new HighlightField("analyzer_abstract_content",
+                        highlightFieldParameters),
+                new HighlightField("analyzer_content",
+                        highlightFieldParameters)
+            )
+        );
+        HighlightQuery highlightQuery = new HighlightQuery(highlight, FileSearchEntity.class);
 
-        SearchHits<FileSearchEntity> searchHits = elasticsearchRestTemplate.search(searchQuery, FileSearchEntity.class);
-        return searchHits;
+        NativeQuery searchQuery = new NativeQueryBuilder()
+                .withQuery(q -> q
+                        .multiMatch(m -> m
+                                .query(keywords)
+                                .fields(
+                                        "analyzer_title",
+                                        "analyzer_content",
+                                        "analyzer_abstract_content")))
+                .withQuery(q -> q
+                        .match(m -> m
+                                .query("true")
+                                .field("is_approved")))
+                .withHighlightQuery(highlightQuery)
+                .withPageable(PageRequest.of(page - 1, rows))
+                .build();
+
+        return elasticsearchOperations.search(searchQuery, FileSearchEntity.class);
     }
     public ArrayList<String> suggestTitle(String keyword,Integer rows) {
         return suggest("suggest_title",keyword,rows);
@@ -58,25 +77,32 @@ public class ESearchServiceImpl {
     public ArrayList<String> suggest(String fieldName, String keyword,Integer rows) {
         HashSet<String> returnSet = new LinkedHashSet<>(); // 用于存储查询到的结果
         // 创建CompletionSuggestionBuilder
-        CompletionSuggestionBuilder textBuilder = SuggestBuilders.completionSuggestion(fieldName) // 指定字段名
-                .size(rows) // 设定返回数量
-                .skipDuplicates(true); // 去重
+        CompletionSuggester.Builder textBuilder = new CompletionSuggester.Builder()
+                .field(fieldName)
+                .size(rows)
+                .skipDuplicates(true);
 
-        // 创建suggestBuilder并将completionBuilder添加进去
-        SuggestBuilder suggestBuilder = new SuggestBuilder();
-        suggestBuilder.addSuggestion("suggest_text", textBuilder)
-                .setGlobalText(keyword);
+        // 创建nativeQuery并将completionBuilder添加进去
+        NativeQuery nativeQuery = new NativeQueryBuilder()
+                .withSuggester(Suggester.of(s -> s
+                        .suggesters("suggest_text", a -> a
+                                .completion(textBuilder.build())
+                                .prefix(keyword))))
+                .build();
+
         // 执行请求
-        Suggest suggest = elasticsearchRestTemplate.suggest(suggestBuilder, elasticsearchRestTemplate.getIndexCoordinatesFor(FileSearchEntity.class)).getSuggest();
+        SearchHits<FileSearchEntity> searchHits = elasticsearchOperations.search(nativeQuery, FileSearchEntity.class);
+
         // 取出结果
-        Suggest.Suggestion<Suggest.Suggestion.Entry<CompletionSuggestion.Entry.Option>> textSuggestion = suggest.getSuggestion("suggest_text");
-        for (Suggest.Suggestion.Entry<CompletionSuggestion.Entry.Option> entry : textSuggestion.getEntries()) {
-            List<CompletionSuggestion.Entry.Option> options = entry.getOptions();
-            for (Suggest.Suggestion.Entry.Option option : options) {
-                returnSet.add(option.getText().toString());
+        if(searchHits.hasSuggest()) {
+            Suggest suggest = searchHits.getSuggest();
+            var textSuggestion = suggest.getSuggestion("suggest_text");
+            for (var entry : textSuggestion.getEntries()) {
+                for (Suggest.Suggestion.Entry.Option option : entry.getOptions()) {
+                    returnSet.add(option.getText());
+                }
             }
         }
         return new ArrayList<>(returnSet);
     }
-
 }

@@ -1,7 +1,6 @@
 package com.oriole.ocean.controller;
 
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.oriole.ocean.common.po.mysql.NoteEntity;
 import com.oriole.ocean.common.po.mysql.NoteTypeEntity;
 import com.oriole.ocean.common.vo.MsgEntity;
@@ -31,10 +30,12 @@ public class NoteController {
     }
 
     @RequestMapping(value = "/getNoteByNoteType",method = RequestMethod.GET)
-    public MsgEntity<PageInfo<NoteEntity>> getNoteByNoteType(@RequestParam(required = false) Integer noteType,@RequestParam Integer pageNum, @RequestParam Integer pageSize) {
-        PageHelper.startPage(pageNum, pageSize, true);
-        List<NoteEntity> noteEntityList = noteService.getNoteByNoteType(noteType);
-        PageInfo<NoteEntity> pageInfo = new PageInfo<>(noteEntityList);
-        return new MsgEntity<>("SUCCESS", "1", pageInfo);
+    public MsgEntity<Page<NoteEntity>> getNoteByNoteType(@RequestParam(required = false) Integer noteType,@RequestParam Integer pageNum, @RequestParam Integer pageSize) {
+
+        Page<NoteEntity> page = new Page<>(pageNum, pageSize);
+
+        Page<NoteEntity> resultPage = noteService.getNoteByNoteType(noteType, page);
+
+        return new MsgEntity<>("SUCCESS", "1", resultPage);
     }
 }

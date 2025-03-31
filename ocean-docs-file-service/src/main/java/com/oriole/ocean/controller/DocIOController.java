@@ -1,24 +1,27 @@
 package com.oriole.ocean.controller;
 
 import com.aliyun.oss.model.CannedAccessControlList;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.oriole.ocean.common.auth.AuthUser;
+import com.oriole.ocean.common.enumerate.NotifyAction;
+import com.oriole.ocean.common.enumerate.NotifySubscriptionTargetType;
+import com.oriole.ocean.common.po.mysql.FileEntity;
+import com.oriole.ocean.common.po.mysql.FileExtraEntity;
+import com.oriole.ocean.common.po.mysql.FileSearchEntity;
+import com.oriole.ocean.common.po.mysql.FileUploadTempEntity;
 import com.oriole.ocean.common.service.FileSearchService;
 import com.oriole.ocean.common.service.FileService;
-import com.oriole.ocean.common.service.NotifyService;
 import com.oriole.ocean.common.service.NotifySubscriptionService;
 import com.oriole.ocean.common.tools.JwtUtils;
 import com.oriole.ocean.common.vo.AuthUserEntity;
-import com.oriole.ocean.config.OSSConfig;
-import com.oriole.ocean.common.enumerate.*;
-import com.oriole.ocean.common.po.mysql.*;
 import com.oriole.ocean.common.vo.BusinessException;
 import com.oriole.ocean.common.vo.MsgEntity;
-import com.oriole.ocean.service.*;
+import com.oriole.ocean.config.OSSConfig;
+import com.oriole.ocean.service.FileUploadTempService;
 import com.oriole.ocean.utils.OpenOfficeUtils;
 import com.oriole.ocean.utils.PdfUtils;
 import com.oriole.ocean.utils.objectStorage.AliOSSUtils;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -30,7 +33,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -75,14 +77,15 @@ public class DocIOController {
     public String DOWNLOAD_TOKEN_ENCODED_SECRET_KEY;
 
     @RequestMapping(value = "/getIncompleteInfoFileList", method = RequestMethod.GET)
-    public MsgEntity<PageInfo<FileUploadTempEntity>> getIncompleteInfoFileList(@AuthUser AuthUserEntity authUser,
+    public MsgEntity<Page<FileUploadTempEntity>> getIncompleteInfoFileList(@AuthUser AuthUserEntity authUser,
                                                                                @RequestParam(required = false) String username,
                                                                                @RequestParam Integer pageNum, @RequestParam Integer pageSize) {
         username = authUser.getAllowOperationUsername(username);
 
-        PageHelper.startPage(pageNum, pageSize, true);
-        PageInfo<FileUploadTempEntity> fileUploadTempEntityListPageInfo = new PageInfo<>(fileUploadTempService.getAllUploadTempFileInfoByUsername(username));
-        return new MsgEntity<>("SUCCESS", "1", fileUploadTempEntityListPageInfo);
+        Page<FileUploadTempEntity> page = new Page<>(pageNum, pageSize);
+
+        Page<FileUploadTempEntity> fileUploadTempEntityListPage = fileUploadTempService.getAllUploadTempFileInfoByUsername(username, page);
+        return new MsgEntity<>("SUCCESS", "1", fileUploadTempEntityListPage);
     }
     @RequestMapping(value = "/getUploadFileTempInfo", method = RequestMethod.GET)
     public MsgEntity<FileUploadTempEntity> getUploadFileTempInfo(@AuthUser String username, @RequestParam Integer uploadID) throws Exception {

@@ -2,15 +2,12 @@ package com.oriole.ocean.service;
 
 import com.oriole.ocean.common.enumerate.UserInfoLevel;
 import com.oriole.ocean.common.po.mysql.UserEntity;
-import com.oriole.ocean.common.vo.BusinessException;
-import com.oriole.ocean.common.vo.MsgEntity;
 import com.oriole.ocean.service.base.UserBaseInfoServiceImpl;
 import com.oriole.ocean.service.base.UserCertificationServiceImpl;
 import com.oriole.ocean.service.base.UserExtraInfoServiceImpl;
 import com.oriole.ocean.service.base.UserWalletServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Service
 public class UserInfoServiceImpl {

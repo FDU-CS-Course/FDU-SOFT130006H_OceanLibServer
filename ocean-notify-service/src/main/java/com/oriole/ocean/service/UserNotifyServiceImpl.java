@@ -2,11 +2,11 @@ package com.oriole.ocean.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.oriole.ocean.dao.UserNotifyDao;
 import com.oriole.ocean.common.po.mysql.UserNotifyEntity;
+import com.oriole.ocean.dao.UserNotifyDao;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 

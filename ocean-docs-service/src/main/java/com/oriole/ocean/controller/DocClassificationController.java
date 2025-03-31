@@ -1,7 +1,6 @@
 package com.oriole.ocean.controller;
 
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.oriole.ocean.common.po.mongo.IndexNodeEntity;
 import com.oriole.ocean.common.po.mysql.FileEntity;
 import com.oriole.ocean.common.po.mysql.FileTypeEntity;
@@ -46,18 +45,22 @@ public class DocClassificationController {
     }
 
     @RequestMapping(value = "/getGroupsFileList",method = RequestMethod.GET)
-    public MsgEntity<PageInfo<FileEntity>> getFileListByTypeIDAndTagIDAndIndexString(
+    public MsgEntity<Page<FileEntity>> getFileListByTypeIDAndTagIDAndIndexString(
             @RequestParam(required = false) Integer typeID,
             @RequestParam(required = false) String tagString,
             @RequestParam(required = false) String indexString,
             @RequestParam Integer pageNum, @RequestParam Integer pageSize) {
-        PageHelper.startPage(pageNum, pageSize, true);
-        List<FileEntity> fileEntityList = fileService.getFileDetailsInfoListByTypeIDAndTagStringAndIndexString(typeID, tagString, indexString);
-        for (FileEntity fileEntity : fileEntityList) {
-            fileEntity.setRealObjectName(null);
-        }
-        PageInfo<FileEntity> pageInfo = new PageInfo<>(fileEntityList);
-        return new MsgEntity<>("SUCCESS", "1", pageInfo);
+        Page<FileEntity> page = new Page<>(pageNum, pageSize);
+
+        Page<FileEntity> resultPage = fileService.getFileDetailsInfoListByTypeIDAndTagStringAndIndexString(
+                typeID,
+                tagString,
+                indexString,
+                page);
+
+        resultPage.getRecords().forEach(file -> file.setRealObjectName(null));
+
+        return new MsgEntity<>("SUCCESS", "1", resultPage);
     }
 
     @RequestMapping(value = "/getIndexList",method = RequestMethod.GET)

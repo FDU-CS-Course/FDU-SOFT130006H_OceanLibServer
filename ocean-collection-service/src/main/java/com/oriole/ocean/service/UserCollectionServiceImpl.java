@@ -7,6 +7,7 @@ import com.oriole.ocean.common.po.mysql.UserCollectionEntity;
 import com.oriole.ocean.common.service.FileExtraService;
 import com.oriole.ocean.common.vo.BusinessException;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@DubboService
 public class UserCollectionServiceImpl {
 
     @Autowired

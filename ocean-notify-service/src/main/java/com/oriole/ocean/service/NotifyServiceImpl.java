@@ -5,9 +5,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.oriole.ocean.common.enumerate.NotifyAction;
 import com.oriole.ocean.common.enumerate.NotifyType;
 import com.oriole.ocean.common.po.mongo.UserBehaviorEntity;
+import com.oriole.ocean.common.po.mysql.NotifyEntity;
 import com.oriole.ocean.common.service.NotifyService;
 import com.oriole.ocean.dao.NotifyDao;
-import com.oriole.ocean.common.po.mysql.NotifyEntity;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.stereotype.Service;
 

@@ -2,8 +2,8 @@ package com.oriole.ocean.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.oriole.ocean.dao.TypeDao;
 import com.oriole.ocean.common.po.mysql.FileTypeEntity;
+import com.oriole.ocean.dao.TypeDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

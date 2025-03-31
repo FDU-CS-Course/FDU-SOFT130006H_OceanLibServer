@@ -22,3 +22,7 @@ dubbo:
     port: -1
   consumer:
     check: false
+logging:
+  level:
+    org:
+      DEBUG

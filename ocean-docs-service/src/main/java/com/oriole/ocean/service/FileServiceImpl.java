@@ -1,16 +1,17 @@
 package com.oriole.ocean.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.oriole.ocean.common.po.mysql.FileEntity;
 import com.oriole.ocean.common.po.mysql.FileExtraEntity;
 import com.oriole.ocean.common.service.FileService;
 import com.oriole.ocean.dao.FileDao;
-import com.oriole.ocean.common.po.mysql.FileEntity;
+import jakarta.annotation.Resource;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.annotation.Resource;
 import java.util.List;
 
 @Service
@@ -34,17 +35,17 @@ public class FileServiceImpl extends ServiceImpl<FileDao, FileEntity> implements
     }
 
     //文章详细信息查询（通过用户名查询）（可区分是否已被审核）
-    public List<FileEntity> getFileDetailsInfoListByUsername(String username, Boolean isApproved, Boolean isFolder) {
-        return fileDao.getFileListByUsername(username, isApproved, isFolder);
+    public Page<FileEntity> getFileDetailsInfoListByUsername(String username, Boolean isApproved, Boolean isFolder, Page<FileEntity> page) {
+        return fileDao.getFileListByUsername(page, username, isApproved, isFolder);
     }
 
     //文章详细信息查询（通过分类ID、标签ID和索引字符串查询）
-    public List<FileEntity> getFileDetailsInfoListByTypeIDAndTagStringAndIndexString(Integer typeID, String tagString, String indexString) {
+    public Page<FileEntity> getFileDetailsInfoListByTypeIDAndTagStringAndIndexString(Integer typeID, String tagString, String indexString, Page<FileEntity> page) {
         String[] tagIDs = new String[0];
         if (!tagString.isEmpty() && !tagString.equals("null")) {
             tagIDs = tagString.split("\\,");
         }
-        return fileDao.getFileListByTypeIDAndTagIDAndIndexString(typeID, tagIDs, indexString + "%");
+        return fileDao.getFileListByTypeIDAndTagIDAndIndexString(page, typeID, tagIDs, indexString + "%");
     }
 
     //文章详细信息查询（通过FolderID查询）
