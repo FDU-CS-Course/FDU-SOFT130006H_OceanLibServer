@@ -3,13 +3,11 @@ package com.oriole.ocean.common.po.mysql;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.Date;
 
-@Getter
-@Setter
+@Data
 @TableName("user")
 public class UserEntity implements java.io.Serializable {
 

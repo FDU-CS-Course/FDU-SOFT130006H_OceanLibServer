@@ -1,6 +1,6 @@
 package com.oriole.ocean.common.auth;
 
-import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 import com.oriole.ocean.common.vo.AuthUserEntity;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;

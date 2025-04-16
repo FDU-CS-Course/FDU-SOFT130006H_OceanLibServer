@@ -11,8 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.baomidou.mybatisplus.extension.toolkit.Db.list;
-
 @Service
 @Transactional
 public class UserWalletChangeRecordServiceImpl extends ServiceImpl<WalletChangeRecordDao, WalletChangeRecordEntity> {

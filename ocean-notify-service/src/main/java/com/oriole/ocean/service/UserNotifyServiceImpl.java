@@ -6,7 +6,7 @@ import com.oriole.ocean.dao.UserNotifyDao;
 import com.oriole.ocean.common.po.mysql.UserNotifyEntity;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.Resource;
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 

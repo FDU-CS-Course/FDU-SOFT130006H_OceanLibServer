@@ -12,9 +12,9 @@ import com.oriole.ocean.common.vo.AuthUserEntity;
 import com.oriole.ocean.common.vo.BusinessException;
 import com.oriole.ocean.common.vo.MsgEntity;
 import com.oriole.ocean.service.CommentServiceImpl;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,11 +44,11 @@ public class UserCommentController {
     @DubboReference
     NotifySubscriptionService notifySubscriptionService;
 
-    @Operation(summary = "删除评论区评论或回复")
-    @Parameters({
-            @Parameter(name = "bindID", description = "资源唯一编号", required = true),
-            @Parameter(name = "mainType", description = "主资源类型（文档/纸条）", required = true),
-            @Parameter(name = "commentID", description = "评论唯一编号", required = true)
+    @ApiOperation(value = "删除评论区评论或回复")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "bindID", value = "资源唯一编号", required = true),
+            @ApiImplicitParam(name = "mainType", value = "主资源类型（文档/纸条）", required = true),
+            @ApiImplicitParam(name = "commentID", value = "评论唯一编号", required = true)
     })
     @RequestMapping(value = "/deleteComment", method = RequestMethod.GET)
     public MsgEntity<String> deleteComment(@AuthUser AuthUserEntity authUser,
@@ -85,7 +85,7 @@ public class UserCommentController {
                 commentStatusType = CommentStatusType.USER_CLOSURE;
             }
         }
-        if (commentStatusType == null) { // 仍然没有找到合乎情理的删除理由，说明没有权限
+        if (commentStatusType == null) { // 仍然没有找到合乎清理的删除理由，说明没有权限
             throw new BusinessException("-2", "权限不足，必须为评论发布者或文档发布者");
         }
         //执行删除
@@ -200,13 +200,13 @@ public class UserCommentController {
         return new MsgEntity<>("SUCCESS", "1", commentEntity);
     }
 
-    @Operation(summary = "评价一条评论或回复", description = "isLike参数为评价操作的分类（true表示为点赞操作，false表示为点踩操作），isCancel为是否为取消评价操作。如isLike为false，isCancel为true，则表示取消点踩操作")
-    @Parameters({
-            @Parameter(name = "bindID", description = "唯一资源编号", required = true),
-            @Parameter(name = "mainType", description = "资源类型", required = true),
-            @Parameter(name = "commentID", description = "评论唯一编号", required = true),
-            @Parameter(name = "isCancel", description = "是否为取消操作", required = true),
-            @Parameter(name = "isLike", description = "是否为点赞操作", required = true)
+    @ApiOperation(value = "评价一条评论或回复", notes = "isLike参数为评价操作的分类（true表示为点赞操作，false表示为点踩操作），isCancel为是否为取消评价操作。如isLike为false，isCancel为true，则表示取消点踩操作")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "bindID", value = "唯一资源编号", required = true),
+            @ApiImplicitParam(name = "mainType", value = "资源类型", required = true),
+            @ApiImplicitParam(name = "commentID", value = "评论唯一编号", required = true),
+            @ApiImplicitParam(name = "isCancel", value = "是否为取消操作", required = true),
+            @ApiImplicitParam(name = "isLike", value = "是否为点赞操作", required = true)
     })
     @RequestMapping(value = "/evaluateComment", method = RequestMethod.GET)
     public MsgEntity<String> evaluateComment(@AuthUser AuthUserEntity authUser,

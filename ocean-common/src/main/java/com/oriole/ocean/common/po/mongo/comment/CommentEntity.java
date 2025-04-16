@@ -1,12 +1,10 @@
 package com.oriole.ocean.common.po.mongo.comment;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.util.ArrayList;
 
 @Data
-@EqualsAndHashCode(callSuper=false)
 public class CommentEntity extends AbstractComment implements java.io.Serializable {
     private String commentBuildUsername;
     private Integer hotValue;

@@ -23,19 +23,15 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <!--LOMBOK DEPENDENCY-->
-        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.36</version>
-            <scope>provided</scope>
         </dependency>
-
         <!--MYBATIS PLUS DEPENDENCY-->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus</artifactId>
-            <version>3.5.10.1</version>
+            <version>3.5.4.1</version>
         </dependency>
         <!--ES DEPENDENCY-->
         <dependency>
@@ -48,24 +44,21 @@
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
         <!--FASTJSON DEPENDENCY-->
-        <!-- https://mvnrepository.com/artifact/com.alibaba.fastjson2/fastjson2 -->
         <dependency>
-            <groupId>com.alibaba.fastjson2</groupId>
-            <artifactId>fastjson2</artifactId>
-            <version>2.0.56</version>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>2.0.43</version>
         </dependency>
         <!--JWT DEPENDENCY-->
-        <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-api</artifactId>
-            <version>0.12.6</version>
+            <artifactId>jjwt</artifactId>
+            <version>0.9.1</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.auth0/java-jwt -->
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
-            <version>4.5.0</version>
+            <version>3.4.0</version>
         </dependency>
     </dependencies>
 </project>

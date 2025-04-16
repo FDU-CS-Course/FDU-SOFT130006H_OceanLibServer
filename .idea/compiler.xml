@@ -2,6 +2,7 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <option name="BUILD_PROCESS_ADDITIONAL_VM_OPTIONS" value="-Djps.track.ap.dependencies=false" />
+    <option name="USE_RELEASE_OPTION" value="false" />
     <annotationProcessing>
       <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
@@ -20,12 +21,11 @@
         <module name="ocean-note-service" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="23" />
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_STRING" value="-Xlint:-options" />
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="ocean" options="-parameters" />
+      <module name="ocean" options="" />
       <module name="ocean-collection-service" options="-parameters" />
       <module name="ocean-comment-service" options="-parameters" />
       <module name="ocean-common" options="-parameters" />

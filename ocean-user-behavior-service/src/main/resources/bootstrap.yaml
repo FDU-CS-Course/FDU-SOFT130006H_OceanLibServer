@@ -17,6 +17,5 @@ dubbo:
       group: dubbo
   protocol:
     port: -1
-    serialization: kryo
   consumer:
     check: false

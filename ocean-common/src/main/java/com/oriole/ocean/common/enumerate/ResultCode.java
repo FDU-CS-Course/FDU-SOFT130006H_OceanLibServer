@@ -1,5 +1,6 @@
 package com.oriole.ocean.common.enumerate;
 
+
 import lombok.Getter;
 
 @Getter
