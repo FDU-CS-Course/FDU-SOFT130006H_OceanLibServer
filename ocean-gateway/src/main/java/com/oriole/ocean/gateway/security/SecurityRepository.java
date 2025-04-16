@@ -18,7 +18,7 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static org.springframework.security.core.context.SecurityContextHolder.createEmptyContext;
+import static org.springframework.security.core.context.SecurityContextHolder.*;
 
 @Slf4j
 @Component

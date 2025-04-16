@@ -1,6 +1,7 @@
 package com.oriole.ocean.controller;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.oriole.ocean.common.auth.AuthUser;
 import com.oriole.ocean.common.enumerate.BehaviorType;
 import com.oriole.ocean.common.enumerate.MainType;
@@ -16,10 +17,8 @@ import com.oriole.ocean.service.FileCheckServiceImpl;
 import com.oriole.ocean.service.FileServiceImpl;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -43,16 +42,15 @@ public class DocInfoController {
     FileCheckServiceImpl fileCheckService;
 
     @RequestMapping(value = "/getFileList", method = RequestMethod.GET)
-    public MsgEntity<Page<FileEntity>> getFileList(@AuthUser AuthUserEntity authUser,
+    public MsgEntity<PageInfo<FileEntity>> getFileList(@AuthUser AuthUserEntity authUser,
                                                        @RequestParam(required = false) String username,
                                                        @RequestParam Integer pageNum, @RequestParam Integer pageSize,
                                                        @RequestParam Boolean isFolder) {
         username = authUser.getAllowOperationUsername(username);
 
-        Page<FileEntity> page = new Page<>(pageNum, pageSize);
-
-        Page<FileEntity> fileEntityListPage = fileService.getFileDetailsInfoListByUsername(username, true, isFolder, page);
-        return new MsgEntity<>("SUCCESS", "1", fileEntityListPage);
+        PageHelper.startPage(pageNum, pageSize, true);
+        PageInfo<FileEntity> fileEntityListPageInfo = new PageInfo<>(fileService.getFileDetailsInfoListByUsername(username, true, isFolder));
+        return new MsgEntity<>("SUCCESS", "1", fileEntityListPageInfo);
     }
 
     @RequestMapping(value = "/getFileListByFolderID", method = RequestMethod.GET)
@@ -126,21 +124,21 @@ public class DocInfoController {
     }
 
     @RequestMapping(value = "/getNotAcceptedFileList", method = RequestMethod.GET)
-    public MsgEntity<Page<FileEntity>> getNotAcceptedFileList(@AuthUser AuthUserEntity authUser,
+    public MsgEntity<PageInfo<FileEntity>> getNotAcceptedFileList(@AuthUser AuthUserEntity authUser,
                                                                   @RequestParam(required = false) String username,
                                                                   @RequestParam Integer pageNum, @RequestParam Integer pageSize) {
         username = authUser.getAllowOperationUsername(username);
 
-        Page<FileEntity> page = new Page<>(pageNum, pageSize);
-
-        Page<FileEntity> resultPage = fileService.getFileDetailsInfoListByUsername(username, false, false, page);
-        resultPage.getRecords().forEach(fileEntity -> {
+        PageHelper.startPage(pageNum, pageSize, true);
+        List<FileEntity> fileEntityList = fileService.getFileDetailsInfoListByUsername(username, false, false);
+        fileEntityList.forEach(fileEntity -> {
             if (!fileEntity.getIsApproved().equals((byte) 0)) {
                 FileCheckEntity fileCheckEntity = fileCheckService.getFileCheckInfo(fileEntity.getFileID());
                 fileEntity.setFileCheckEntity(fileCheckEntity);
             }
         });
-        return new MsgEntity<>("SUCCESS", "1", resultPage);
+        PageInfo<FileEntity> fileEntityListPageInfo = new PageInfo<>(fileEntityList);
+        return new MsgEntity<>("SUCCESS", "1", fileEntityListPageInfo);
     }
 
     @RequestMapping(value = "/getRecentlyReadList", method = RequestMethod.GET)

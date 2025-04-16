@@ -1,8 +1,7 @@
 package com.oriole.ocean.common.po.mongo.comment;
-
 import com.oriole.ocean.common.enumerate.MainType;
-import lombok.Data;
 
+import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 

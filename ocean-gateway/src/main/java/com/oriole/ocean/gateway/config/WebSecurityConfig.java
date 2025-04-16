@@ -1,8 +1,6 @@
 package com.oriole.ocean.gateway.config;
 
-import com.oriole.ocean.gateway.security.AccessDeniedHandler;
-import com.oriole.ocean.gateway.security.AuthenticationEntryPoint;
-import com.oriole.ocean.gateway.security.SecurityRepository;
+import com.oriole.ocean.gateway.security.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

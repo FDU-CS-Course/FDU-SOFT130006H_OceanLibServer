@@ -5,10 +5,12 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.oriole.ocean.common.enumerate.BehaviorType;
 import com.oriole.ocean.common.enumerate.MainType;
 import com.oriole.ocean.common.enumerate.NotifyAction;
 import com.oriole.ocean.common.enumerate.NotifyType;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
 
 import java.util.Date;
 

@@ -5,6 +5,7 @@ import com.oriole.ocean.common.po.mongo.UserBehaviorEntity;
 import com.oriole.ocean.common.service.UserBehaviorService;
 import com.oriole.ocean.common.vo.BusinessException;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

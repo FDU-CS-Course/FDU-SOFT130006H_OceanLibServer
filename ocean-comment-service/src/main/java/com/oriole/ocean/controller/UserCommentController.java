@@ -1,7 +1,7 @@
 package com.oriole.ocean.controller;
 
-import com.oriole.ocean.common.auth.AuthUser;
 import com.oriole.ocean.common.enumerate.*;
+import com.oriole.ocean.common.auth.AuthUser;
 import com.oriole.ocean.common.po.mongo.UserBehaviorEntity;
 import com.oriole.ocean.common.po.mongo.comment.*;
 import com.oriole.ocean.common.po.mysql.NotifyEntity;

@@ -5,8 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.oriole.ocean.common.enumerate.NotifyAction;
-import com.oriole.ocean.common.enumerate.NotifySubscriptionTargetType;
+import com.oriole.ocean.common.enumerate.*;
 import lombok.Data;
 
 import java.util.Date;

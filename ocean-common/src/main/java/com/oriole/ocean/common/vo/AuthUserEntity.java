@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.util.List;
 
+import static com.oriole.ocean.common.enumerate.ResultCode.DOCS_NOT_APPROVED;
 import static com.oriole.ocean.common.enumerate.ResultCode.UNAUTHORIZED_OPERATION;
 
 @Data

@@ -1,6 +1,6 @@
 package com.oriole.ocean.controller;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.pagehelper.PageInfo;
 import com.oriole.ocean.common.auth.AuthUser;
 import com.oriole.ocean.common.po.mysql.WalletChangeRecordEntity;
 import com.oriole.ocean.common.vo.AuthUserEntity;
@@ -20,17 +20,8 @@ public class UserWalletController {
     UserWalletChangeRecordServiceImpl walletChangeRecordService;
 
     @RequestMapping(value = "/getWalletChangeRecord",method = RequestMethod.GET)
-    public MsgEntity<Page<WalletChangeRecordEntity>> getWalletChangeRecord(
-            @AuthUser AuthUserEntity authUser,
-            @RequestParam Integer pageNum,
-            @RequestParam Integer pageSize) {
-
-        Page<WalletChangeRecordEntity> pageResult = walletChangeRecordService.getWalletChangeRecord(
-                authUser.getUsername(),
-                pageNum,
-                pageSize
-        );
-
-        return new MsgEntity<>("SUCCESS", "1", pageResult);
+    public MsgEntity<PageInfo<WalletChangeRecordEntity>> getWalletChangeRecord(@AuthUser AuthUserEntity authUser, @RequestParam Integer pageNum, @RequestParam Integer pageSize) {
+        return new MsgEntity<>("SUCCESS", "1",
+                walletChangeRecordService.getWalletChangeRecord(authUser.getUsername(),pageNum,pageSize));
     }
 }

@@ -4,12 +4,9 @@ import com.oriole.ocean.common.enumerate.ResultCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.Serial;
-
 @Setter
 public class BusinessException extends RuntimeException {
 
-    @Serial
     private static final long serialVersionUID = -7480022450501760611L;
 
     /**
