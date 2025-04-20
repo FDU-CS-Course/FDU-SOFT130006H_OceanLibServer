@@ -30,8 +30,8 @@ public class UserBehaviorServiceImpl implements UserBehaviorService {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-//    @Autowired
-//    private NotifyServiceImpl notifyService;
+    @Autowired
+    private NotifyServiceImpl notifyService;
 
     // 检查某用户针对特定对象（某文档/某便签等）的评价行为，并得出此次评价所需发生的全部评价行为
     // 对特定对象具有评论区时，也可处理对其评论区的评价行为
@@ -133,7 +133,7 @@ public class UserBehaviorServiceImpl implements UserBehaviorService {
     public void setBehaviorRecord(UserBehaviorEntity userBehavior) {
         mongoTemplate.save(userBehavior, "user_behavior");
         // 部分用户行为需要产生用户消息
-//        notifyService.addNotifyByBehaviorRecord(userBehaviorEntity);
+        notifyService.addNotifyByBehaviorRecord(userBehavior);
     }
 
     public void updateBehaviorRecordExtraInfo(UserBehaviorEntity userBehavior, BehaviorExtraInfo behaviorExtraInfo, Object value) {

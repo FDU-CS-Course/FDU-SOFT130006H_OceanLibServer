@@ -76,7 +76,7 @@ public class CommentServiceImpl {
     }
 
     private String getCollectionName(MainType mainType){
-        return "comments_" + mainType.toString();
+        return mainType.toString().toLowerCase() + "_comments";
     }
 
     public CommentsListEntity getCommentsListEntity(Integer bindID, MainType mainType) {
@@ -91,7 +91,7 @@ public class CommentServiceImpl {
     public List<CommentEntity> getComments(Integer bindID, MainType mainType, Integer commentCount, Integer queryReplyCount, Integer pageNum) {
         List<AggregationOperation> operations = new ArrayList<>();
         operations.add(Aggregation.match(Criteria.where("bindID").is(bindID)));
-        operations.add(Aggregation.unwind("comments"));
+        operations.add(Aggregation.unwind("comments", true));
         operations.add(Aggregation.sort(Sort.by(new Sort.Order(Sort.Direction.DESC, "comments.hotValue")))
                 .and(Sort.by(new Sort.Order(Sort.Direction.DESC, "comments.likeNumber")))
                 .and(Sort.by(new Sort.Order(Sort.Direction.ASC, "comments.dislikeNumber"))));
