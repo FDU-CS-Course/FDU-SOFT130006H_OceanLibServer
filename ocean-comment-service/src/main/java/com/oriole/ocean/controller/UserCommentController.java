@@ -217,6 +217,7 @@ public class UserCommentController {
                                              @RequestParam Boolean isLike) {
         // 添加用户行为
         UserBehaviorEntity userBehaviorEntity = new UserBehaviorEntity(bindID, mainType, authUser.getUsername(), null);
+        userBehaviorEntity.setExtraInfo(BehaviorExtraInfo.COMMENT_ID, commentID);
         List<EvaluateType> evaluates = userBehaviorService.checkAndGetUserEvaluateBehavior(userBehaviorEntity, isCancel, isLike);
         userBehaviorService.setUserEvaluateBehavior(userBehaviorEntity, evaluates);
 

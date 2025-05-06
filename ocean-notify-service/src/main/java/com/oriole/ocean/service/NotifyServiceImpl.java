@@ -2,6 +2,7 @@ package com.oriole.ocean.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.oriole.ocean.common.enumerate.BehaviorExtraInfo;
 import com.oriole.ocean.common.enumerate.NotifyAction;
 import com.oriole.ocean.common.enumerate.NotifySubscriptionTargetType;
 import com.oriole.ocean.common.enumerate.NotifyType;
@@ -23,12 +24,6 @@ import java.util.List;
 @DubboService
 public class NotifyServiceImpl extends ServiceImpl<NotifyDao, NotifyEntity> implements NotifyService {
 
-    @Autowired
-    private NotifySubscriptionServiceImpl notifySubscriptionServiceImpl;
-
-    @Autowired
-    private UserNotifyServiceImpl userNotifyServiceImpl;
-
     public void addNotify(NotifyEntity notifyEntity){
         save(notifyEntity);
     }
@@ -46,7 +41,7 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyDao, NotifyEntity> impl
                 break;
             case DO_COMMENT_LIKE:
                 notifyEntity.setAction(NotifyAction.LIKE_COMMENT);
-                notifyEntity.setCommentID(userBehaviorEntity.getExtraInfo().getString("commentID"));
+                notifyEntity.setCommentID((String) userBehaviorEntity.getExtraInfo(BehaviorExtraInfo.COMMENT_ID));
                 break;
             default:
                 return;
@@ -54,38 +49,6 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyDao, NotifyEntity> impl
         notifyEntity.setUserBehaviorID(userBehaviorEntity.getId());
         notifyEntity.setTargetIDAndType(String.valueOf(userBehaviorEntity.getBindID()),userBehaviorEntity.getType());
         addNotify(notifyEntity);
-
-        NotifySubscriptionTargetType temp;
-        switch (notifyEntity.getTargetType()) {
-            case NOTE:
-                temp = NotifySubscriptionTargetType.NOTE;
-                break;
-            case DOCUMENT:
-                temp = NotifySubscriptionTargetType.DOCUMENT;
-                break;
-            default:
-                temp = NotifySubscriptionTargetType.NOTE;
-                break;
-        }
-
-        List<NotifySubscriptionEntity> notifySubscriptionEntities =
-            notifySubscriptionServiceImpl.getAllSubscriptionByTargetAndAction(
-                notifyEntity.getTargetID(),
-                temp,
-                notifyEntity.getAction()
-        );
-
-        List<UserNotifyEntity> userNotifyEntities =
-                Arrays.asList(new UserNotifyEntity[notifySubscriptionEntities.size()]);
-
-        for(int i = 0;i < notifySubscriptionEntities.size();i++) {
-            userNotifyEntities.get(i).setUsername(notifySubscriptionEntities.get(i).getUsername());
-            userNotifyEntities.get(i).setIsRead((byte)0);
-            userNotifyEntities.get(i).setNotifyID(notifyEntity.getId());
-            userNotifyEntities.get(i).setBuildDate(notifyEntity.getBuildDate());
-        }
-
-        userNotifyServiceImpl.setUserNotifyList(userNotifyEntities);
     }
 
     // 查询指定时间之后产生的所有消息
