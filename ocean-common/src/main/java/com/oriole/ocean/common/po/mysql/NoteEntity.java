@@ -12,17 +12,24 @@ import java.util.Date;
 public class NoteEntity implements java.io.Serializable {
     @TableId("note_id")
     private Integer noteID;
-
-    private Integer noteType;
+    private String tag;
     private String content;
+    @TableId("like_num")
     private Integer likeNum;
+    @TableId("comment_num")
     private Integer commentNum;
+    @TableId("read_num")
     private Integer readNum;
+    @TableId("refresh_date")
     private Date refreshDate;
+    @TableId("build_date")
     private Date buildDate;
+    @TableId("build_username")
     private String buildUsername;
+    @TableId("is_anon")
     private Byte isAnon;
+    @TableId("is_approved")
     private Byte isApproved;
+    @TableId("is_allow_comment")
     private Byte isAllowComment;
-
 }
