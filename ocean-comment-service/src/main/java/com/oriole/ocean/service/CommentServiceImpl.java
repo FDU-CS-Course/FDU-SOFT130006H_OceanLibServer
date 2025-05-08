@@ -37,7 +37,7 @@ public class CommentServiceImpl {
     private FileExtraService fileExtraService;
 
     @DubboReference
-    private FileService fileService ;
+    private FileService fileService;
 
     public void commentStatisticsChange(Integer itemID, String addNumber, MainType mainType) {
         switch (mainType){
@@ -97,7 +97,7 @@ public class CommentServiceImpl {
                 .and(Sort.by(new Sort.Order(Sort.Direction.ASC, "comments.dislikeNumber"))));
         ProjectionOperation projectionOperation =
                 Aggregation.project("commentBuildUsername", "commentContent", "hotValue", "likeNumber", "dislikeNumber", "buildDate", "replyCount")
-                        .andExpression("comments._id").as("_id")
+                        .andExpression("comments._id").as("ID")
                         .andExpression("comments.commentBuildUsername").as("commentBuildUsername")
                         .andExpression("comments.commentContent").as("commentContent")
                         .andExpression("comments.hotValue").as("hotValue")
