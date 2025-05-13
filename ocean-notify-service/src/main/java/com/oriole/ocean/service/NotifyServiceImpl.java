@@ -32,6 +32,7 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyDao, NotifyEntity> impl
     public void addNotifyByBehaviorRecord(UserBehaviorEntity userBehaviorEntity) {
         // 收藏、每日签到、阅读等行为都不需要记录为通知行为
         NotifyEntity notifyEntity = new NotifyEntity(NotifyType.REMIND,userBehaviorEntity.getDoUsername());
+        String targetID = String.valueOf(userBehaviorEntity.getBindID());
         switch (userBehaviorEntity.getBehaviorType()) {
             case DO_DOWNLOAD:
                 notifyEntity.setAction(NotifyAction.DOWNLOAD);
@@ -41,13 +42,13 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyDao, NotifyEntity> impl
                 break;
             case DO_COMMENT_LIKE:
                 notifyEntity.setAction(NotifyAction.LIKE_COMMENT);
-                notifyEntity.setCommentID((String) userBehaviorEntity.getExtraInfo(BehaviorExtraInfo.COMMENT_ID));
+                targetID = (String) userBehaviorEntity.getExtraInfo(BehaviorExtraInfo.COMMENT_ID);
                 break;
             default:
                 return;
         }
         notifyEntity.setUserBehaviorID(userBehaviorEntity.getId());
-        notifyEntity.setTargetIDAndType(String.valueOf(userBehaviorEntity.getBindID()),userBehaviorEntity.getType());
+        notifyEntity.setTargetIDAndType(targetID,userBehaviorEntity.getType());
         addNotify(notifyEntity);
     }
 
