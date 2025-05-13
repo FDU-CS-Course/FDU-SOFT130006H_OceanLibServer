@@ -7,12 +7,14 @@ import com.oriole.ocean.common.po.mysql.NoteTypeEntity;
 import com.oriole.ocean.common.vo.MsgEntity;
 import com.oriole.ocean.service.NoteService;
 import com.oriole.ocean.service.NoteTypeService;
+import com.oriole.ocean.common.dto.NoteEntityDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -24,6 +26,12 @@ public class NoteController {
 
     @Autowired
     NoteTypeService noteTypeService;
+
+    @RequestMapping(value = "/createNote", method = RequestMethod.POST)
+    public MsgEntity<NoteEntity> createNote(@RequestParam() NoteEntityDTO noteEntity) {
+        NoteEntity note = noteService.createNote(noteEntity);
+        return new MsgEntity<>("SUCCESS", "1", note);
+    }
 
     @RequestMapping(value = "/getAllNoteType",method = RequestMethod.GET)
     public MsgEntity<List<NoteTypeEntity>> getAllNoteType() {
