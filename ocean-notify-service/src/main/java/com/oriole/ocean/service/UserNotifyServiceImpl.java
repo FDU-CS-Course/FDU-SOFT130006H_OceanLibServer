@@ -26,6 +26,11 @@ public class UserNotifyServiceImpl extends ServiceImpl<UserNotifyDao, UserNotify
         return true;
     }
 
+    // 用户阅读消息
+    public boolean checkUnreadNotify(String username){
+        return userNotifyDao.checkUnreadNotify(username);
+    }
+
     // 查询用户消息表中最后的更新时间
     public Date getUserNotifyLastUpdateTime() {
         QueryWrapper<UserNotifyEntity> queryWrapper = new QueryWrapper<>();

@@ -47,4 +47,13 @@ public class UserNotifyController {
 
         return new MsgEntity<>("SUCCESS", "1", userNotifyService.readAllNotifyByUsernameAndLatestReadNotifyDate(username, latestReadNotifyDate));
     }
+
+    @RequestMapping("/ifExistsUnreadNotifications")
+    public MsgEntity<Boolean> readNotifications(
+            @AuthUser AuthUserEntity authUser,
+            @RequestParam String username) {
+        username = authUser.getAllowOperationUsername(username);
+
+        return new MsgEntity<>("SUCCESS", "1", userNotifyService.checkUnreadNotify(username));
+    }
 }

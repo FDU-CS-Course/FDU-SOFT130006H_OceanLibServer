@@ -33,4 +33,15 @@
             AND build_date >= #{latestReadNotifyDate}
         </if>
     </update>
+
+    <select id="checkUnreadNotify" resultType="boolean">
+        SELECT CASE WHEN EXISTS(
+            SELECT *
+            FROM user_notify
+            WHERE username = #{username}
+              AND is_read = 0
+        ) THEN 1
+        ELSE 0
+        END;
+    </select>
 </mapper>

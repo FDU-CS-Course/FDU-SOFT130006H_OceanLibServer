@@ -9,4 +9,5 @@ import java.util.List;
 public interface UserNotifyDao extends BaseMapper<UserNotifyEntity> {
     List<UserNotifyEntity> getAllNotifyByUsernameAndLastPullDate(String username, Date latestPullDate);
     void readAllNotifyByUsernameAndLatestReadNotifyDate(String username, Date latestReadNotifyDate);
+    boolean checkUnreadNotify(String username);
 }
