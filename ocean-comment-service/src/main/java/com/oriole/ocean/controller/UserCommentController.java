@@ -141,14 +141,12 @@ public class UserCommentController {
                 notifyEntity.setCommentID(replyInCommentID);
             }
         }
-
-        /*--- DEPRECATED ---*/
         // 增加用户消息订阅事件：用户需要订阅自己发布的评论或回复的动态
-//        List<NotifyAction> notifyActionList = new ArrayList<>();
-//        notifyActionList.add(NotifyAction.LIKE_COMMENT);
-//        notifyActionList.add(NotifyAction.NEW_REPLY);
-//        notifySubscriptionService.setNotifySubscription(authUser.getUsername(), notifyActionList,
-//                returnEntity.getId(), NotifySubscriptionTargetType.COMMENT);
+        List<NotifyAction> notifyActionList = new ArrayList<>();
+        notifyActionList.add(NotifyAction.LIKE_COMMENT);
+        notifyActionList.add(NotifyAction.NEW_REPLY);
+        notifySubscriptionService.setNotifySubscription(authUser.getUsername(), notifyActionList,
+                returnEntity.getId(), NotifySubscriptionTargetType.COMMENT);
 
         // 产生用户消息事件
         notifyService.addNotify(notifyEntity);
