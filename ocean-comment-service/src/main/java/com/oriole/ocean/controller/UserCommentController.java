@@ -166,7 +166,8 @@ public class UserCommentController {
                                                     @RequestParam Integer commentCount, @RequestParam Integer replyCount,
                                                     @RequestParam Integer pageNum) {
         CommentsListEntity commentsListEntity = commentService.getCommentsListEntity(bindID, mainType);
-        if (commentsListEntity == null) {
+        if (commentsListEntity == null ||
+                commentsListEntity.getComments().isEmpty()) {
             // 新建评论文档
             return new MsgEntity<>("SUCCESS", "1", commentService.initCommentArea(bindID, mainType));
         }
