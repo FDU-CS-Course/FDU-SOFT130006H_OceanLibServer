@@ -17,7 +17,9 @@ public class UserNotifyServiceImpl extends ServiceImpl<UserNotifyDao, UserNotify
 
     //用户消息表
     public List<UserNotifyEntity> getAllNotifyByUsernameAndLastPullDate(String username, Date latestPullDate){
-        return userNotifyDao.getAllNotifyByUsernameAndLastPullDate(username,latestPullDate);
+        List<UserNotifyEntity> result = userNotifyDao.getAllNotifyByUsernameAndLastPullDate(username,latestPullDate);
+        userNotifyDao.readAllNotifyByUsernameAndLastPullDate(username,latestPullDate);
+        return result;
     }
 
     // 查询用户消息表中最后的更新时间
