@@ -31,7 +31,7 @@ public class UserNotifyController {
     @RequestMapping("/getLatestNotifications")
     public MsgEntity<List<UserNotifyEntity>> getLatestNotifications(
             @AuthUser AuthUserEntity authUser,
-            @RequestParam(required = false) String username,
+            @RequestParam String username,
             @RequestParam(required = false) Date lastPullDate) {
         username = authUser.getAllowOperationUsername(username);
 
@@ -41,7 +41,7 @@ public class UserNotifyController {
     @RequestMapping("/readNotifications")
     public MsgEntity<Boolean> readNotifications(
             @AuthUser AuthUserEntity authUser,
-            @RequestParam(required = false) String username,
+            @RequestParam String username,
             @RequestParam(required = false) Date latestReadNotifyDate) {
         username = authUser.getAllowOperationUsername(username);
 
