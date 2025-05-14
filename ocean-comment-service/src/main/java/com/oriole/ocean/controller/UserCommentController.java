@@ -166,13 +166,13 @@ public class UserCommentController {
                                                     @RequestParam Integer commentCount, @RequestParam Integer replyCount,
                                                     @RequestParam Integer pageNum) {
         CommentsListEntity commentsListEntity = commentService.getCommentsListEntity(bindID, mainType);
-        if (commentsListEntity == null ||
-                commentsListEntity.getComments().isEmpty()) {
+        if (commentsListEntity == null) {
             // 新建评论文档
             return new MsgEntity<>("SUCCESS", "1", commentService.initCommentArea(bindID, mainType));
         }
         List<CommentEntity> commentEntities = commentService.getComments(bindID, mainType, commentCount, replyCount, pageNum);
         //处理评论
+        //commentEntities.removeIf( commentEntity -> commentEntity.getId() == null);
         for (CommentEntity comment : commentEntities) {
             //处理评论日期信息
             comment.setBuildDate(handleTime(comment.getBuildDate()));

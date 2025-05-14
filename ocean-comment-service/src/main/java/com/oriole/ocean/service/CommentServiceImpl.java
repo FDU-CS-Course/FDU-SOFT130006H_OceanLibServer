@@ -91,6 +91,8 @@ public class CommentServiceImpl {
     public List<CommentEntity> getComments(Integer bindID, MainType mainType, Integer commentCount, Integer queryReplyCount, Integer pageNum) {
         List<AggregationOperation> operations = new ArrayList<>();
         operations.add(Aggregation.match(Criteria.where("bindID").is(bindID)));
+        operations.add(Aggregation.match(Criteria.where("comments").exists(true)));
+        operations.add(Aggregation.match(Criteria.where("comments").not().size(0)));
         operations.add(Aggregation.unwind("comments", true));
         operations.add(Aggregation.sort(Sort.by(new Sort.Order(Sort.Direction.DESC, "comments.hotValue")))
                 .and(Sort.by(new Sort.Order(Sort.Direction.DESC, "comments.likeNumber")))
