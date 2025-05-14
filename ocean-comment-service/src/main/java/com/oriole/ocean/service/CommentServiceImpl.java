@@ -97,7 +97,7 @@ public class CommentServiceImpl {
                 .and(Sort.by(new Sort.Order(Sort.Direction.ASC, "comments.dislikeNumber"))));
         ProjectionOperation projectionOperation =
                 Aggregation.project("commentBuildUsername", "commentContent", "hotValue", "likeNumber", "dislikeNumber", "buildDate", "replyCount")
-                        .andExpression("comments._id").as("ID")
+                        .andExpression("comments._id").as("_id")
                         .andExpression("comments.commentBuildUsername").as("commentBuildUsername")
                         .andExpression("comments.commentContent").as("commentContent")
                         .andExpression("comments.hotValue").as("hotValue")
