@@ -15,11 +15,15 @@ public class UserNotifyServiceImpl extends ServiceImpl<UserNotifyDao, UserNotify
     @Resource
     private UserNotifyDao userNotifyDao;
 
-    //用户消息表
+    // 用户消息表
     public List<UserNotifyEntity> getAllNotifyByUsernameAndLastPullDate(String username, Date latestPullDate){
-        List<UserNotifyEntity> result = userNotifyDao.getAllNotifyByUsernameAndLastPullDate(username,latestPullDate);
-        userNotifyDao.readAllNotifyByUsernameAndLastPullDate(username,latestPullDate);
-        return result;
+        return userNotifyDao.getAllNotifyByUsernameAndLastPullDate(username,latestPullDate);
+    }
+
+    // 用户阅读消息
+    public boolean readAllNotifyByUsernameAndLatestReadNotifyDate(String username, Date latestReadNotifyDate){
+        userNotifyDao.readAllNotifyByUsernameAndLatestReadNotifyDate(username, latestReadNotifyDate);
+        return true;
     }
 
     // 查询用户消息表中最后的更新时间

@@ -29,8 +29,8 @@
     <update id="readAllNotifyByUsernameAndLastPullDate">
         UPDATE user_notify WHERE username = #{username}
         SET is_read = 1;
-        <if test="latestPullDate != null">
-            AND build_date >= #{latestPullDate}
+        <if test="latestReadNotifyDate != null">
+            AND build_date >= #{latestReadNotifyDate}
         </if>
     </update>
 </mapper>
