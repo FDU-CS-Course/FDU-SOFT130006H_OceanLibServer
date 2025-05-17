@@ -15,18 +15,25 @@ import com.oriole.ocean.common.vo.BusinessException;
 import com.oriole.ocean.common.vo.MsgEntity;
 import com.oriole.ocean.service.FileCheckServiceImpl;
 import com.oriole.ocean.service.FileServiceImpl;
+import com.oriole.ocean.model.FileInfo;
+import com.oriole.ocean.service.DocInfoService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Map;
 
 import static com.oriole.ocean.common.enumerate.ResultCode.*;
 
+/**
+ * Controller for handling document information related requests.
+ */
 @RestController
 //@Slf4j
 @RequestMapping("/docInfoService")
@@ -40,6 +47,9 @@ public class DocInfoController {
 
     @Autowired
     FileCheckServiceImpl fileCheckService;
+
+    @Autowired
+    private DocInfoService docInfoService;
 
     @RequestMapping(value = "/getFileList", method = RequestMethod.GET)
     public MsgEntity<PageInfo<FileEntity>> getFileList(@AuthUser AuthUserEntity authUser,
@@ -184,5 +194,25 @@ public class DocInfoController {
                                               @RequestParam Integer folderID) {
         fileService.saveOrUpdateFileInfo(new FileEntity(title, abstractContent, username, folderID));
         return new MsgEntity<>(SUCCESS);
+    }
+
+    /**
+     * Retrieves a paginated list of files owned by the current user.
+     *
+     * @param authUser Current authenticated user
+     * @param isFolder Whether to fetch folders (false for files)
+     * @param pageNum Page number for pagination
+     * @param pageSize Number of items per page
+     * @return MsgEntity containing the list of files and pagination info
+     */
+    @GetMapping("/getMyFileList")
+    public MsgEntity<Map<String, Object>> getMyFileList(
+            @AuthUser AuthUserEntity authUser,
+            @RequestParam boolean isFolder,
+            @RequestParam int pageNum,
+            @RequestParam int pageSize) {
+        
+        Map<String, Object> result = docInfoService.getMyFileList(authUser.getUsername(), isFolder, pageNum, pageSize);
+        return new MsgEntity<>("SUCCESS", "1", result);
     }
 }
