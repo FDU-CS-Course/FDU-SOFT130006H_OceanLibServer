@@ -10,17 +10,21 @@ import java.util.Date;
 @Data
 @TableName("`note`")
 public class NoteEntity implements java.io.Serializable {
-    @TableId("note_id")
-    private Integer noteID;
-    private String tag;
+    @TableId("id")
+    private Integer id;
+    private String buildUsername;
+    // contents
     private String content;
+    private String tag;
+    // extra info
+    private Date buildDate;
+    private Date refreshDate;
+    // states
+    private Byte isDeleted;
+    private Byte isAnon;
+    private Byte isAllowComment;
+    // statistics (changing with relation 'likes')
     private Integer likeNum;
     private Integer commentNum;
     private Integer readNum;
-    private Date refreshDate;
-    private Date buildDate;
-    private String buildUsername;
-    private boolean isDeleted;
-    private Byte isAnon;
-    private Byte isAllowComment;
 }

@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oriole.ocean.dao.NoteDao">
+
+    <resultMap id="note" type="com.oriole.ocean.common.po.mysql.NoteEntity">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="buildUsername" column="build_username" jdbcType="VARCHAR"/>
+        <result property="content" column="content" jdbcType="TEXT"/>
+        <result property="tag" column="tag" jdbcType="VARCHAR"/>
+        <result property="buildDate" column="build_date" jdbcType="TIMESTAMP"/>
+        <result property="refreshDate" column="refresh_date" jdbcType="TIMESTAMP"/>
+        <result property="isDeleted" column="is_deleted" jdbcType="TINYINT"/>
+        <result property="isAnon" column="is_anon" jdbcType="TINYINT"/>
+        <result property="isAllowComment" column="is_allow_comment" jdbcType="TINYINT"/>
+        <result property="likeNum" column="like_num" jdbcType="INTEGER"/>
+        <result property="commentNum" column="comment_num" jdbcType="INTEGER"/>
+        <result property="readNum" column="read_num" jdbcType="INTEGER"/>
+        <association property="noteEntity" javaType="com.oriole.ocean.common.po.mysql.NoteEntity" select="getNoteEntityByNoteID"
+                     column="{NoteID=note_id}">
+        </association>
+    </resultMap>
+
+    <select id="getNoteEntityByNoteID" resultType="com.oriole.ocean.common.po.mysql.NoteEntity">
+        SELECT * FROM note WHERE note.id = #{noteID};
+    </select>
+
+    <select id="getLatestNotes" resultType="com.oriole.ocean.common.po.mysql.NoteEntity">
+        SELECT * FROM note ORDER BY note.refresh_date ASC;
+    </select>
+
+    <select id="getNotesByTag" resultType="com.oriole.ocean.common.po.mysql.NoteEntity">
+        SELECT * FROM note WHERE note.tag = #{tag} ORDER BY note.refresh_date ASC;
+    </select>
+
+    <select id="checkNoteBuilder" resultType="Boolean">
+        SELECT CASE WHEN EXISTS(
+            SELECT *
+            FROM note
+            WHERE note.id = #{noteID}
+              AND note.buildUsername = #{username}
+        ) THEN 1
+                    ELSE 0
+                   END;
+    </select>
+
+    <update id="deleteNote">
+        UPDATE note
+        SET is_deleted = 1
+        WHERE note.id = #{noteID} AND note.buildUsername = #{username};
+    </update>
+
+</mapper>

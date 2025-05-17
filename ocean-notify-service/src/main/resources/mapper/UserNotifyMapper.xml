@@ -27,8 +27,9 @@
     </select>
 
     <update id="readAllNotifyByUsernameAndLastPullDate">
-        UPDATE user_notify WHERE username = #{username}
-        SET is_read = 1;
+        UPDATE user_notify
+        SET is_read = 1
+        WHERE username = #{username};
         <if test="latestReadNotifyDate != null">
             AND build_date >= #{latestReadNotifyDate}
         </if>

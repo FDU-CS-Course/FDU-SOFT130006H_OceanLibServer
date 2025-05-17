@@ -2,19 +2,17 @@ package com.oriole.ocean.controller;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.oriole.ocean.common.auth.AuthUser;
 import com.oriole.ocean.common.po.mysql.NoteEntity;
-import com.oriole.ocean.common.po.mysql.NoteTypeEntity;
+import com.oriole.ocean.common.vo.AuthUserEntity;
 import com.oriole.ocean.common.vo.MsgEntity;
 import com.oriole.ocean.service.NoteService;
-import com.oriole.ocean.service.NoteTypeService;
-import com.oriole.ocean.common.dto.NoteEntityDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -24,24 +22,41 @@ public class NoteController {
     @Autowired
     NoteService noteService;
 
-    @Autowired
-    NoteTypeService noteTypeService;
+    @RequestMapping(value = "/getLatestNote", method = RequestMethod.POST)
+    public MsgEntity<PageInfo<NoteEntity>> getNoteByPage(
+            @RequestParam int pageNO,
+            @RequestParam int pageSize) {
+        PageHelper.startPage(pageNO, pageSize, true);
+        List<NoteEntity> noteEntityList = noteService.getLatestNotes();
+        PageInfo<NoteEntity> pageInfo = new PageInfo<>(noteEntityList);
+        return new MsgEntity<>("SUCCESS","1",pageInfo);
+    }
 
     @RequestMapping(value = "/createNote", method = RequestMethod.POST)
-    public MsgEntity<NoteEntity> createNote(@RequestParam() NoteEntityDTO noteEntity) {
+    public MsgEntity<NoteEntity> createNote(
+            @AuthUser AuthUserEntity authUser,
+            @RequestParam() NoteEntity noteEntity) {
+        noteEntity.setBuildUsername(authUser.getUsername());
         NoteEntity note = noteService.createNote(noteEntity);
         return new MsgEntity<>("SUCCESS", "1", note);
     }
 
-    @RequestMapping(value = "/getAllNoteType",method = RequestMethod.GET)
-    public MsgEntity<List<NoteTypeEntity>> getAllNoteType() {
-        return new MsgEntity<>("SUCCESS", "1", noteTypeService.getAllNoteType());
+    @RequestMapping(value = "/deleteNote", method = RequestMethod.POST)
+    public MsgEntity<String> deleteNote(
+            @AuthUser AuthUserEntity authUser,
+            @RequestParam() int noteID) {
+        if(!noteService.deleteNote(noteID, authUser.getUsername()))
+            return new MsgEntity<>("FAILED", "400", "Invalid Note ID or Wrong User");
+        return new MsgEntity<>("SUCCESS", "1", "山本！お前の先人を犯してやる！");
     }
 
-    @RequestMapping(value = "/getNoteByNoteType",method = RequestMethod.GET)
-    public MsgEntity<PageInfo<NoteEntity>> getNoteByNoteType(@RequestParam(required = false) Integer noteType,@RequestParam Integer pageNum, @RequestParam Integer pageSize) {
+    @RequestMapping(value = "/getNoteByTag",method = RequestMethod.GET)
+    public MsgEntity<PageInfo<NoteEntity>> getNoteByTag(
+            @RequestParam(required = false) String tag,
+            @RequestParam Integer pageNum,
+            @RequestParam Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize, true);
-        List<NoteEntity> noteEntityList = noteService.getNoteByNoteType(noteType);
+        List<NoteEntity> noteEntityList = noteService.getNotesByTag(tag);
         PageInfo<NoteEntity> pageInfo = new PageInfo<>(noteEntityList);
         return new MsgEntity<>("SUCCESS", "1", pageInfo);
     }
