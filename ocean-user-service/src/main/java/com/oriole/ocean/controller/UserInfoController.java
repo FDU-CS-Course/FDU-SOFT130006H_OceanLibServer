@@ -6,6 +6,7 @@ import com.oriole.ocean.common.po.mysql.UserEntity;
 import com.oriole.ocean.common.vo.AuthUserEntity;
 import com.oriole.ocean.common.vo.BusinessException;
 import com.oriole.ocean.common.vo.MsgEntity;
+import com.oriole.ocean.dto.UserInfoUpdateDTO;
 import com.oriole.ocean.service.UserInfoServiceImpl;
 import com.oriole.ocean.service.base.UserBaseInfoServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -47,5 +48,22 @@ public class UserInfoController {
     public MsgEntity<UserEntity> getUserAllInfo(@AuthUser AuthUserEntity authUser) {
         return new MsgEntity<>("SUCCESS", "1",
                 userInfoService.getUserInfo(authUser.getUsername(), UserInfoLevel.ALL));
+    }
+
+    @PostMapping("/updateUserInfo")
+    /**
+     * Update user personal information. Only non-null fields will be updated.
+     * @param authUser Authenticated user (from token)
+     * @param updateDTO Fields to update
+     * @return Success message or error
+     */
+    public MsgEntity<String> updateUserInfo(@AuthUser AuthUserEntity authUser, @RequestBody UserInfoUpdateDTO updateDTO) {
+        try {
+            userInfoService.updateUserInfo(authUser.getUsername(), updateDTO);
+            return new MsgEntity<>("SUCCESS", "1", "User info updated successfully");
+        } catch (Exception e) {
+            log.error("Failed to update user info for {}: {}", authUser.getUsername(), e.getMessage(), e);
+            throw new BusinessException("-1", "Failed to update user info: " + e.getMessage());
+        }
     }
 }
