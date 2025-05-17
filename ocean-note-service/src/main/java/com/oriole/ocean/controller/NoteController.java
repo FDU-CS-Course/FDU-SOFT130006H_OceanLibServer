@@ -6,7 +6,7 @@ import com.oriole.ocean.common.auth.AuthUser;
 import com.oriole.ocean.common.po.mysql.NoteEntity;
 import com.oriole.ocean.common.vo.AuthUserEntity;
 import com.oriole.ocean.common.vo.MsgEntity;
-import com.oriole.ocean.service.NoteService;
+import com.oriole.ocean.common.service.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -35,8 +35,16 @@ public class NoteController {
     @RequestMapping(value = "/createNote", method = RequestMethod.POST)
     public MsgEntity<NoteEntity> createNote(
             @AuthUser AuthUserEntity authUser,
-            @RequestParam() NoteEntity noteEntity) {
+            @RequestParam String content,
+            @RequestParam String tag,
+            @RequestParam Byte isAnon,
+            @RequestParam Byte isAllowComment) {
+        NoteEntity noteEntity = new NoteEntity();
         noteEntity.setBuildUsername(authUser.getUsername());
+        noteEntity.setContent(content);
+        noteEntity.setTag(tag);
+        noteEntity.setIsAnon(isAnon);
+        noteEntity.setIsAllowComment(isAllowComment);
         NoteEntity note = noteService.createNote(noteEntity);
         return new MsgEntity<>("SUCCESS", "1", note);
     }
