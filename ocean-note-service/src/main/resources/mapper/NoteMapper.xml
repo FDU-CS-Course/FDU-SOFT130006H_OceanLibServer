@@ -6,7 +6,7 @@
     <resultMap id="note" type="com.oriole.ocean.common.po.mysql.NoteEntity">
         <id property="id" column="id" jdbcType="INTEGER"/>
         <result property="buildUsername" column="build_username" jdbcType="VARCHAR"/>
-        <result property="content" column="content" jdbcType="TEXT"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
         <result property="tag" column="tag" jdbcType="VARCHAR"/>
         <result property="buildDate" column="build_date" jdbcType="TIMESTAMP"/>
         <result property="refreshDate" column="refresh_date" jdbcType="TIMESTAMP"/>
