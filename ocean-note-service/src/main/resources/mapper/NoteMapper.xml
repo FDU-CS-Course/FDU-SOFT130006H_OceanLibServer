@@ -26,11 +26,23 @@
     </select>
 
     <select id="getLatestNotes" resultType="com.oriole.ocean.common.po.mysql.NoteEntity">
-        SELECT * FROM note ORDER BY note.refresh_date ASC;
+        SELECT * FROM note WHERE note.is_deleted = 0 ORDER BY note.refresh_date ASC;
+    </select>
+
+    <select id="getNotesByKeywords" resultType="com.oriole.ocean.common.po.mysql.NoteEntity">
+        SELECT *
+        FROM note
+        WHERE
+        is_deleted = 0
+        HAVING
+        MATCH(content) AGAINST(#{searchString} IN NATURAL LANGUAGE MODE) > 0
+        ORDER BY
+        MATCH(content) AGAINST(#{searchString} IN NATURAL LANGUAGE MODE) DESC,
+        refresh_date DESC
     </select>
 
     <select id="getNotesByTag" resultType="com.oriole.ocean.common.po.mysql.NoteEntity">
-        SELECT * FROM note WHERE note.tag = #{tag} ORDER BY note.refresh_date ASC;
+        SELECT * FROM note WHERE note.is_deleted = 0 AND note.tag = #{tag} ORDER BY note.refresh_date ASC;
     </select>
 
     <select id="checkNoteBuilder" resultType="Boolean">

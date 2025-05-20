@@ -9,6 +9,8 @@ public interface NoteService {
 
     List<NoteEntity> getLatestNotes();
 
+    List<NoteEntity> getNotesByKeywords(String serchString);
+
     List<NoteEntity> getNotesByTag(String tag);
 
     NoteEntity createNote(NoteEntity noteEntity);

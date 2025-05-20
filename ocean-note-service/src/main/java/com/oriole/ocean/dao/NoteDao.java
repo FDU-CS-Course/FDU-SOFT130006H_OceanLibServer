@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface NoteDao extends BaseMapper<NoteEntity> {
     List<NoteEntity> getLatestNotes();
+    List<NoteEntity> getNotesByKeywords(String serchString);
     void deleteNote(int noteId, String username);
     boolean checkNoteBuilder(int noteId, String username);
     List<NoteEntity> getNotesByTag(String tag);

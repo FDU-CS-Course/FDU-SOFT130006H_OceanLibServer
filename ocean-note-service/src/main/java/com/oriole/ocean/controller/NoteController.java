@@ -32,6 +32,17 @@ public class NoteController {
         return new MsgEntity<>("SUCCESS","1",pageInfo);
     }
 
+    @RequestMapping(value = "/getNotesByKeywords", method = RequestMethod.POST)
+    public MsgEntity<PageInfo<NoteEntity>> getNotesByKeywords(
+            @RequestParam String searchString,
+            @RequestParam int pageNO,
+            @RequestParam int pageSize) {
+        PageHelper.startPage(pageNO, pageSize, true);
+        List<NoteEntity> noteEntityList = noteService.getNotesByKeywords(searchString);
+        PageInfo<NoteEntity> pageInfo = new PageInfo<>(noteEntityList);
+        return new MsgEntity<>("SUCCESS","1",pageInfo);
+    }
+
     @RequestMapping(value = "/createNote", method = RequestMethod.POST)
     public MsgEntity<NoteEntity> createNote(
             @AuthUser AuthUserEntity authUser,
@@ -61,9 +72,9 @@ public class NoteController {
     @RequestMapping(value = "/getNoteByTag",method = RequestMethod.GET)
     public MsgEntity<PageInfo<NoteEntity>> getNoteByTag(
             @RequestParam(required = false) String tag,
-            @RequestParam Integer pageNum,
+            @RequestParam Integer pageNo,
             @RequestParam Integer pageSize) {
-        PageHelper.startPage(pageNum, pageSize, true);
+        PageHelper.startPage(pageNo, pageSize, true);
         List<NoteEntity> noteEntityList = noteService.getNotesByTag(tag);
         PageInfo<NoteEntity> pageInfo = new PageInfo<>(noteEntityList);
         return new MsgEntity<>("SUCCESS", "1", pageInfo);

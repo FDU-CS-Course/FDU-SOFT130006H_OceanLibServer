@@ -33,6 +33,10 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
         return noteDao.getLatestNotes();
     }
 
+    public List<NoteEntity> getNotesByKeywords(String serchString) {
+        return noteDao.getNotesByKeywords(serchString);
+    }
+
     public List<NoteEntity> getNotesByTag(String tag) {
         return noteDao.getNotesByTag(tag);
     }
