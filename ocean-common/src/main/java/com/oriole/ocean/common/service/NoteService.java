@@ -1,5 +1,6 @@
 package com.oriole.ocean.common.service;
 
+import com.oriole.ocean.common.po.mongo.comment.NoteCommentEntity;
 import com.oriole.ocean.common.po.mysql.NoteEntity;
 import java.util.List;
 
@@ -13,5 +14,9 @@ public interface NoteService {
 
     List<NoteEntity> getNotesByTag(String tag);
 
+    List<NoteCommentEntity> getNoteCommentsByNoteId(String noteId, int pageNo, int pageSize);
+
     NoteEntity createNote(NoteEntity noteEntity);
+
+    NoteCommentEntity createNoteComment(NoteCommentEntity noteCommentEntity);
 }

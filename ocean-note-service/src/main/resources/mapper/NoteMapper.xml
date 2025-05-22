@@ -26,7 +26,7 @@
     </select>
 
     <select id="getLatestNotes" resultType="com.oriole.ocean.common.po.mysql.NoteEntity">
-        SELECT * FROM note WHERE note.is_deleted = 0 ORDER BY note.refresh_date ASC;
+        SELECT * FROM note WHERE note.is_deleted = 0 ORDER BY note.refresh_date ASC
     </select>
 
     <select id="getNotesByKeywords" resultType="com.oriole.ocean.common.po.mysql.NoteEntity">

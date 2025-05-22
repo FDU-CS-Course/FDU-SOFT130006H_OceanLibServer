@@ -3,16 +3,21 @@ package com.oriole.ocean.controller;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.oriole.ocean.common.auth.AuthUser;
+import com.oriole.ocean.common.po.mongo.comment.CommentReplyEntity;
+import com.oriole.ocean.common.po.mongo.comment.NoteCommentEntity;
 import com.oriole.ocean.common.po.mysql.NoteEntity;
 import com.oriole.ocean.common.vo.AuthUserEntity;
 import com.oriole.ocean.common.vo.MsgEntity;
 import com.oriole.ocean.common.service.NoteService;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -49,9 +54,10 @@ public class NoteController {
             @RequestParam String content,
             @RequestParam String tag,
             @RequestParam Byte isAnon,
-            @RequestParam Byte isAllowComment) {
+            @RequestParam Byte isAllowComment,
+            @RequestParam String buildUsername) {
         NoteEntity noteEntity = new NoteEntity();
-        noteEntity.setBuildUsername(authUser.getUsername());
+        noteEntity.setBuildUsername(buildUsername);
         noteEntity.setContent(content);
         noteEntity.setTag(tag);
         noteEntity.setIsAnon(isAnon);
@@ -78,5 +84,31 @@ public class NoteController {
         List<NoteEntity> noteEntityList = noteService.getNotesByTag(tag);
         PageInfo<NoteEntity> pageInfo = new PageInfo<>(noteEntityList);
         return new MsgEntity<>("SUCCESS", "1", pageInfo);
+    }
+
+    @RequestMapping(value = "/getNoteCommentByNoteId", method = RequestMethod.POST)
+    public MsgEntity<PageInfo<NoteCommentEntity>> getNoteCommentByNoteId(
+            @RequestParam String noteId,
+            @RequestParam Integer pageNo,
+            @RequestParam Integer pageSize) {
+        PageHelper.startPage(pageNo, pageSize, true);
+        List<NoteCommentEntity> noteCommentEntityList = noteService.getNoteCommentsByNoteId(noteId, pageNo, pageSize);
+        PageInfo<NoteCommentEntity> pageInfo = new PageInfo<>(noteCommentEntityList);
+        return new MsgEntity<>("SUCCESS", "1", pageInfo);
+    }
+
+    @RequestMapping(value = "/createNoteComment", method = RequestMethod.POST)
+    public MsgEntity<NoteCommentEntity> createNoteComment(
+            @RequestParam String noteId,
+            @RequestParam String userName,
+            @RequestParam String commentContent
+    ) {
+
+        String cid = RandomStringUtils.randomAlphanumeric(8).toUpperCase();
+        NoteCommentEntity noteCommentEntity = new NoteCommentEntity(cid, noteId, userName, commentContent);
+
+        NoteCommentEntity noteComment = noteService.createNoteComment(noteCommentEntity);
+
+        return new MsgEntity<>("SUCCESS", "1", noteCommentEntity);
     }
 }

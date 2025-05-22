@@ -12,7 +12,7 @@ import java.util.Date;
 @TableName("`note`")
 public class NoteEntity implements java.io.Serializable {
     @TableId("note_id")
-    private String id;
+    private Long id;
 
     @TableField("build_username")
     private String buildUsername;

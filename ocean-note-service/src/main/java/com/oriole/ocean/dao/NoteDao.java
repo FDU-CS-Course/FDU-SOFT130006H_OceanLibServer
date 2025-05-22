@@ -1,6 +1,7 @@
 package com.oriole.ocean.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.oriole.ocean.common.po.mongo.comment.NoteCommentEntity;
 import com.oriole.ocean.common.po.mysql.NoteEntity;
 import com.oriole.ocean.common.po.mysql.UserNotifyEntity;
 
@@ -13,4 +14,5 @@ public interface NoteDao extends BaseMapper<NoteEntity> {
     void deleteNote(int noteId, String username);
     boolean checkNoteBuilder(int noteId, String username);
     List<NoteEntity> getNotesByTag(String tag);
+    List<NoteCommentEntity> getNoteCommentsByNoteId(String noteId);
 }

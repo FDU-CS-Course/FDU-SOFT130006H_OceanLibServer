@@ -1,9 +1,17 @@
 package com.oriole.ocean.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.oriole.ocean.common.po.mongo.UserBehaviorEntity;
+import com.oriole.ocean.common.po.mongo.comment.NoteCommentEntity;
 import com.oriole.ocean.common.service.NoteService;
 import com.oriole.ocean.dao.NoteDao;
 import com.oriole.ocean.common.po.mysql.NoteEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,8 +25,15 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
     @Resource
     private NoteDao noteDao;
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
     private void addNote(NoteEntity note){
         save(note);
+    }
+
+    private void addNoteComment(NoteCommentEntity noteComment){
+        mongoTemplate.save(noteComment, "note_comments");
     }
 
     public boolean deleteNote(int noteID, String username){
@@ -30,6 +45,7 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
     }
 
     public List<NoteEntity> getLatestNotes() {
+        System.out.println(noteDao.getLatestNotes());
         return noteDao.getLatestNotes();
     }
 
@@ -52,5 +68,25 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
         addNote(noteEntity);
 
         return noteEntity;
+    }
+
+    public NoteCommentEntity createNoteComment(NoteCommentEntity noteCommentEntity) {
+        noteCommentEntity.setLikeNum(0);
+        noteCommentEntity.setCreateTime(new Date());
+        noteCommentEntity.setReplyCount(0);
+        noteCommentEntity.setReplyCommentList(null);
+
+        addNoteComment(noteCommentEntity);
+
+        return noteCommentEntity;
+    }
+
+    public List<NoteCommentEntity> getNoteCommentsByNoteId(String noteId, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+        Query query = new Query();
+        query.addCriteria(Criteria.where("noteID").is(noteId));
+        query.with(pageable);
+
+        return mongoTemplate.find(query, NoteCommentEntity.class);
     }
 } 
