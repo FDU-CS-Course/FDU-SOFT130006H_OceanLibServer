@@ -9,6 +9,7 @@ import com.oriole.ocean.common.po.mysql.NoteEntity;
 import com.oriole.ocean.common.vo.AuthUserEntity;
 import com.oriole.ocean.common.vo.MsgEntity;
 import com.oriole.ocean.common.service.NoteService;
+import jdk.nashorn.internal.ir.RuntimeNode;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -88,7 +89,7 @@ public class NoteController {
 
     @RequestMapping(value = "/getNoteCommentByNoteId", method = RequestMethod.POST)
     public MsgEntity<PageInfo<NoteCommentEntity>> getNoteCommentByNoteId(
-            @RequestParam String noteId,
+            @RequestParam Long noteId,
             @RequestParam Integer pageNo,
             @RequestParam Integer pageSize) {
         PageHelper.startPage(pageNo, pageSize, true);
@@ -99,16 +100,18 @@ public class NoteController {
 
     @RequestMapping(value = "/createNoteComment", method = RequestMethod.POST)
     public MsgEntity<NoteCommentEntity> createNoteComment(
-            @RequestParam String noteId,
+            @RequestParam Long noteId,
             @RequestParam String userName,
-            @RequestParam String commentContent
+            @RequestParam String commentContent,
+            @RequestParam String replyTo
     ) {
 
         String cid = RandomStringUtils.randomAlphanumeric(8).toUpperCase();
-        NoteCommentEntity noteCommentEntity = new NoteCommentEntity(cid, noteId, userName, commentContent);
+        NoteCommentEntity noteCommentEntity = new NoteCommentEntity(noteId, userName, commentContent, replyTo);
 
+        noteCommentEntity.setReplyTo(replyTo);
         NoteCommentEntity noteComment = noteService.createNoteComment(noteCommentEntity);
 
-        return new MsgEntity<>("SUCCESS", "1", noteCommentEntity);
+        return new MsgEntity<>("SUCCESS", "1", noteComment);
     }
 }
