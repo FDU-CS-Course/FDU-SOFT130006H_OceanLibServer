@@ -103,11 +103,12 @@ public class NoteController {
             @RequestParam Long noteId,
             @RequestParam String userName,
             @RequestParam String commentContent,
-            @RequestParam String replyTo
+            @RequestParam String replyTo,
+            @RequestParam String replyToUsername
     ) {
 
         String cid = RandomStringUtils.randomAlphanumeric(8).toUpperCase();
-        NoteCommentEntity noteCommentEntity = new NoteCommentEntity(noteId, userName, commentContent, replyTo);
+        NoteCommentEntity noteCommentEntity = new NoteCommentEntity(noteId, userName, commentContent, replyTo, replyToUsername);
 
         noteCommentEntity.setReplyTo(replyTo);
         NoteCommentEntity noteComment = noteService.createNoteComment(noteCommentEntity);
