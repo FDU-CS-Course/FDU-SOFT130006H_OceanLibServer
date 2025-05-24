@@ -69,10 +69,9 @@ public class NoteController {
 
     @RequestMapping(value = "/deleteNote", method = RequestMethod.POST)
     public MsgEntity<String> deleteNote(
-            @AuthUser AuthUserEntity authUser,
-            @RequestParam() int noteID) {
-        if(!noteService.deleteNote(noteID, authUser.getUsername()))
-            return new MsgEntity<>("FAILED", "400", "Invalid Note ID or Wrong User");
+            @RequestParam() String noteID) {
+        if(!noteService.deleteNote(noteID))
+            return new MsgEntity<>("FAILED", "400", "Invalid Note ID");
         return new MsgEntity<>("SUCCESS", "1", "山本！お前の先人を犯してやる！");
     }
 
@@ -89,7 +88,7 @@ public class NoteController {
 
     @RequestMapping(value = "/getNoteCommentByNoteId", method = RequestMethod.POST)
     public MsgEntity<PageInfo<NoteCommentEntity>> getNoteCommentByNoteId(
-            @RequestParam Long noteId,
+            @RequestParam String noteId,
             @RequestParam Integer pageNo,
             @RequestParam Integer pageSize) {
         PageHelper.startPage(pageNo, pageSize, true);
@@ -100,7 +99,7 @@ public class NoteController {
 
     @RequestMapping(value = "/createNoteComment", method = RequestMethod.POST)
     public MsgEntity<NoteCommentEntity> createNoteComment(
-            @RequestParam Long noteId,
+            @RequestParam String noteId,
             @RequestParam String userName,
             @RequestParam String commentContent,
             @RequestParam String replyTo,
@@ -114,5 +113,13 @@ public class NoteController {
         NoteCommentEntity noteComment = noteService.createNoteComment(noteCommentEntity);
 
         return new MsgEntity<>("SUCCESS", "1", noteComment);
+    }
+
+    @RequestMapping(value = "/deleteNoteComment", method = RequestMethod.POST)
+    public MsgEntity<String> deleteNoteComment(
+            @RequestParam String _id) {
+        if(!noteService.deleteNoteComment(_id))
+            return new MsgEntity<>("FAILED", "400", "删除评论失败");
+        return new MsgEntity<>("SUCCESS", "1", "评论删除成功");
     }
 }

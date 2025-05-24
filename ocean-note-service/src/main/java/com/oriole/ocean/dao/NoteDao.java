@@ -11,8 +11,8 @@ import java.util.List;
 public interface NoteDao extends BaseMapper<NoteEntity> {
     List<NoteEntity> getLatestNotes();
     List<NoteEntity> getNotesByKeywords(String serchString);
-    void deleteNote(int noteId, String username);
-    boolean checkNoteBuilder(int noteId, String username);
+    void deleteNote(String noteId);
+    boolean checkNoteBuilder(String noteId);
     List<NoteEntity> getNotesByTag(String tag);
     List<NoteCommentEntity> getNoteCommentsByNoteId(String noteId);
 }

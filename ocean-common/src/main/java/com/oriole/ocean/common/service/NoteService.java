@@ -6,7 +6,9 @@ import java.util.List;
 
 public interface NoteService {
 
-    boolean deleteNote(int noteID, String username);
+    boolean deleteNote(String noteID);
+
+    boolean deleteNoteComment(String commentId);
 
     List<NoteEntity> getLatestNotes();
 
@@ -14,7 +16,7 @@ public interface NoteService {
 
     List<NoteEntity> getNotesByTag(String tag);
 
-    List<NoteCommentEntity> getNoteCommentsByNoteId(Long noteId, int pageNo, int pageSize);
+    List<NoteCommentEntity> getNoteCommentsByNoteId(String noteId, int pageNo, int pageSize);
 
     NoteEntity createNote(NoteEntity noteEntity);
 

@@ -11,7 +11,7 @@ import java.util.Date;
 @Data
 public class NoteCommentEntity implements java.io.Serializable {
     private String _id;
-    private Long noteId;
+    private String noteId;
     private String noteCommentBuildUsername;
     private Integer likeNum;
     private Date createTime;
@@ -19,7 +19,7 @@ public class NoteCommentEntity implements java.io.Serializable {
     private String replyToUsername;
     private String commentContent;
 
-    public NoteCommentEntity(Long noteId, String noteCommentBuildUsername, String commentContent, String replyTo, String replyToUsername) {
+    public NoteCommentEntity(String noteId, String noteCommentBuildUsername, String commentContent, String replyTo, String replyToUsername) {
         this.noteId = noteId;
         this.commentContent = commentContent;
         this.noteCommentBuildUsername = noteCommentBuildUsername;

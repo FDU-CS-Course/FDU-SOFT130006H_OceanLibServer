@@ -3,6 +3,7 @@ package com.oriole.ocean.common.po.mysql;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.IdType;
 import lombok.Data;
 
 import java.time.DateTimeException;
@@ -11,8 +12,8 @@ import java.util.Date;
 @Data
 @TableName("`note`")
 public class NoteEntity implements java.io.Serializable {
-    @TableId("note_id")
-    private Long id;
+    @TableId(value = "note_id", type = IdType.ASSIGN_ID)
+    private String id;
 
     @TableField("build_username")
     private String buildUsername;

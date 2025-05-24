@@ -36,11 +36,12 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
         mongoTemplate.save(noteComment, "note_comments");
     }
 
-    public boolean deleteNote(int noteID, String username){
-        if(!noteDao.checkNoteBuilder(noteID, username)) {
+    public boolean deleteNote(String noteID){
+        if(!noteDao.checkNoteBuilder(noteID)) {
             return false;
         }
-        noteDao.deleteNote(noteID, username);
+
+        noteDao.deleteNote(noteID);
         return true;
     }
 
@@ -78,13 +79,39 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
         return noteCommentEntity;
     }
 
-    public List<NoteCommentEntity> getNoteCommentsByNoteId(Long noteId, int pageNo, int pageSize) {
+    public List<NoteCommentEntity> getNoteCommentsByNoteId(String noteId, int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
-        Query query = new Query();
-        query.addCriteria(Criteria.where("noteId").is(noteId));
+        
+        // 创建查询条件，同时支持String和Long类型的noteId（为了兼容旧数据）
+        Criteria criteria = new Criteria().orOperator(
+            Criteria.where("noteId").is(noteId),
+            Criteria.where("noteId").is(tryParseLong(noteId))
+        );
+        
+        Query query = new Query(criteria);
         query.with(pageable);
 
-        System.out.println(mongoTemplate.find(query, NoteCommentEntity.class));
         return mongoTemplate.find(query, NoteCommentEntity.class, "note_comments");
+    }
+    
+    /**
+     * 尝试将字符串转换为Long，如果失败则返回null
+     */
+    private Long tryParseLong(String str) {
+        try {
+            return Long.parseLong(str);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    public boolean deleteNoteComment(String commentId) {
+        try {
+            Query query = new Query(Criteria.where("_id").is(commentId));
+            mongoTemplate.remove(query, NoteCommentEntity.class, "note_comments");
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 } 
