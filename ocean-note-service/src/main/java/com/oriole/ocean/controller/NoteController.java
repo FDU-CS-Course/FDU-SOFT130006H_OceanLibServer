@@ -3,12 +3,14 @@ package com.oriole.ocean.controller;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.oriole.ocean.common.auth.AuthUser;
+import com.oriole.ocean.common.po.mongo.FavorEntity;
 import com.oriole.ocean.common.po.mongo.comment.CommentReplyEntity;
 import com.oriole.ocean.common.po.mongo.comment.NoteCommentEntity;
 import com.oriole.ocean.common.po.mysql.NoteEntity;
 import com.oriole.ocean.common.vo.AuthUserEntity;
 import com.oriole.ocean.common.vo.MsgEntity;
 import com.oriole.ocean.common.service.NoteService;
+import com.oriole.ocean.dao.NoteCollectionDao;
 import jdk.nashorn.internal.ir.RuntimeNode;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/noteService")
@@ -47,6 +50,13 @@ public class NoteController {
         List<NoteEntity> noteEntityList = noteService.getNotesByKeywords(searchString);
         PageInfo<NoteEntity> pageInfo = new PageInfo<>(noteEntityList);
         return new MsgEntity<>("SUCCESS","1",pageInfo);
+    }
+
+    @RequestMapping(value = "/getNoteById", method = RequestMethod.POST)
+    public MsgEntity<NoteEntity> getNoteById(
+            @RequestParam String noteId
+    ) {
+        return new MsgEntity<>("SUCCESS", "1", noteService.getNoteById(noteId));
     }
 
     @RequestMapping(value = "/createNote", method = RequestMethod.POST)
@@ -121,5 +131,33 @@ public class NoteController {
         if(!noteService.deleteNoteComment(_id))
             return new MsgEntity<>("FAILED", "400", "删除评论失败");
         return new MsgEntity<>("SUCCESS", "1", "评论删除成功");
+    }
+
+    @RequestMapping(value = "/favoriteNote", method = RequestMethod.POST)
+    public MsgEntity<FavorEntity> favoriteNote(
+            @RequestParam String username,
+            @RequestParam Boolean isFavor,
+            @RequestParam String noteId,
+            @RequestParam(required = false) String id) {
+        return new MsgEntity<>("SUCCESS", "1", noteService.favoriteNote(username, isFavor, noteId, id));
+    }
+
+    @RequestMapping(value = "/getBehaviourByUsernameAndNoteId", method = RequestMethod.POST)
+    public MsgEntity<FavorEntity> getBehaviourByUsernameAndNoteId(
+            @RequestParam String username,
+            @RequestParam String noteId) {
+        FavorEntity favorEntity = noteService.getBehaviourByUsernameAndNoteId(username, noteId);
+        if (favorEntity == null) return new MsgEntity<>("SUCCESS", "2", null);
+        return new MsgEntity<>("SUCCESS", "1", favorEntity);
+    }
+
+    @RequestMapping(value = "/getBehaviourByUsername", method = RequestMethod.POST)
+    public MsgEntity<PageInfo<FavorEntity>> getBehaviourByUsername(
+            @RequestParam String username,
+            @RequestParam Integer pageNo,
+            @RequestParam Integer pageSize) {
+        List<FavorEntity> collectionList = noteService.getBehaviourByUsername(username, pageNo, pageSize);
+        PageInfo<FavorEntity> pageInfo = new PageInfo<>(collectionList);
+        return new MsgEntity<>("SUCCESS", "1", pageInfo);
     }
 }

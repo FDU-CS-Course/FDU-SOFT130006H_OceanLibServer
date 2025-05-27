@@ -47,6 +47,25 @@
         FROM note WHERE note.is_deleted = 0 AND note.tag = #{tag} ORDER BY note.refresh_date ASC;
     </select>
 
+    <select id="getNoteById" resultType="com.oriole.ocean.common.po.mysql.NoteEntity">
+        SELECT
+            note_id AS id,
+            build_username,
+            content,
+            tag,
+            build_date,
+            refresh_date,
+            is_deleted,
+            is_anon,
+            is_allow_comment,
+            like_num,
+            comment_num,
+            read_num
+        FROM note
+        WHERE note_id = #{noteId}
+          AND is_deleted = 0;
+    </select>
+
     <select id="checkNoteBuilder" resultType="Boolean">
         SELECT CASE WHEN EXISTS(
             SELECT *

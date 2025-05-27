@@ -1,9 +1,12 @@
 package com.oriole.ocean.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.oriole.ocean.common.po.mongo.FavorEntity;
 import com.oriole.ocean.common.po.mongo.UserBehaviorEntity;
 import com.oriole.ocean.common.po.mongo.comment.NoteCommentEntity;
 import com.oriole.ocean.common.service.NoteService;
+import com.oriole.ocean.dao.NoteCollectionDao;
+import com.oriole.ocean.dao.NoteCommentDao;
 import com.oriole.ocean.dao.NoteDao;
 import com.oriole.ocean.common.po.mysql.NoteEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,16 +28,11 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
     @Resource
     private NoteDao noteDao;
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    @Resource
+    private NoteCollectionDao noteCollectionDao;
 
-    private void addNote(NoteEntity note){
-        save(note);
-    }
-
-    private void addNoteComment(NoteCommentEntity noteComment){
-        mongoTemplate.save(noteComment, "note_comments");
-    }
+    @Resource
+    private NoteCommentDao noteCommentDao;
 
     public boolean deleteNote(String noteID){
         if(!noteDao.checkNoteBuilder(noteID)) {
@@ -43,6 +41,32 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
 
         noteDao.deleteNote(noteID);
         return true;
+    }
+
+    public NoteEntity getNoteById(String noteID) {
+        return noteDao.getNoteById(noteID);
+    }
+
+    public FavorEntity favoriteNote(String username, boolean isFavor, String noteID, String id){
+        if(!noteDao.checkNoteBuilder(noteID)) {
+            return null;
+        }
+
+        if (isFavor) {
+            FavorEntity favorEntity = new FavorEntity();
+            favorEntity.setUsername(username);
+            favorEntity.setNoteId(noteID);
+            noteCollectionDao.save(favorEntity);
+            return noteCollectionDao.findByUsernameAndNoteId(username, noteID);
+        }
+        else {
+            FavorEntity favorEntity = new FavorEntity();
+            favorEntity.setUsername(username);
+            favorEntity.setNoteId(noteID);
+            favorEntity.setId(id);
+            noteCollectionDao.delete(favorEntity);
+            return null;
+        }
     }
 
     public List<NoteEntity> getLatestNotes() {
@@ -65,7 +89,7 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
         noteEntity.setReadNum(0);
         noteEntity.setIsDeleted((byte) 0);
 
-        addNote(noteEntity);
+        save(noteEntity);
 
         return noteEntity;
     }
@@ -74,44 +98,29 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
         noteCommentEntity.setLikeNum(0);
         noteCommentEntity.setCreateTime(new Date());
 
-        addNoteComment(noteCommentEntity);
+        noteCommentDao.addNoteComment(noteCommentEntity);
 
         return noteCommentEntity;
     }
 
     public List<NoteCommentEntity> getNoteCommentsByNoteId(String noteId, int pageNo, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
-        
-        // 创建查询条件，同时支持String和Long类型的noteId（为了兼容旧数据）
-        Criteria criteria = new Criteria().orOperator(
-            Criteria.where("noteId").is(noteId),
-            Criteria.where("noteId").is(tryParseLong(noteId))
-        );
-        
-        Query query = new Query(criteria);
-        query.with(pageable);
-
-        return mongoTemplate.find(query, NoteCommentEntity.class, "note_comments");
-    }
-    
-    /**
-     * 尝试将字符串转换为Long，如果失败则返回null
-     */
-    private Long tryParseLong(String str) {
-        try {
-            return Long.parseLong(str);
-        } catch (NumberFormatException e) {
-            return null;
-        }
+        return noteCommentDao.getNoteCommentsByNoteId(noteId, pageNo, pageSize);
     }
 
     public boolean deleteNoteComment(String commentId) {
-        try {
-            Query query = new Query(Criteria.where("_id").is(commentId));
-            mongoTemplate.remove(query, NoteCommentEntity.class, "note_comments");
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        return noteCommentDao.deleteNoteComment(commentId);
     }
+
+    public FavorEntity getBehaviourByUsernameAndNoteId(String username, String noteId) {
+        if (!noteDao.checkNoteBuilder(noteId)) {
+            return null;
+        }
+
+        return noteCollectionDao.findByUsernameAndNoteId(username, noteId);
+    }
+
+    public List<FavorEntity> getBehaviourByUsername(String username, int pageNo, int pageSize) {
+        return noteCollectionDao.getBehaviourByUsername(username, pageNo, pageSize);
+    }
+
 } 
