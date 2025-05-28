@@ -3,16 +3,26 @@ package com.oriole.ocean.controller;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.oriole.ocean.common.auth.AuthUser;
+import com.oriole.ocean.common.enumerate.MainType;
+import com.oriole.ocean.common.enumerate.NotifyAction;
+import com.oriole.ocean.common.enumerate.NotifySubscriptionTargetType;
+import com.oriole.ocean.common.enumerate.NotifyType;
 import com.oriole.ocean.common.po.mongo.FavorEntity;
+import com.oriole.ocean.common.po.mongo.comment.CommentEntity;
 import com.oriole.ocean.common.po.mongo.comment.CommentReplyEntity;
 import com.oriole.ocean.common.po.mongo.comment.NoteCommentEntity;
 import com.oriole.ocean.common.po.mysql.NoteEntity;
+import com.oriole.ocean.common.po.mysql.NotifyEntity;
+import com.oriole.ocean.common.service.NotifyService;
+import com.oriole.ocean.common.service.NotifySubscriptionService;
+import com.oriole.ocean.common.service.UserBehaviorService;
 import com.oriole.ocean.common.vo.AuthUserEntity;
 import com.oriole.ocean.common.vo.MsgEntity;
 import com.oriole.ocean.common.service.NoteService;
 import com.oriole.ocean.dao.NoteCollectionDao;
 import jdk.nashorn.internal.ir.RuntimeNode;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,6 +40,12 @@ public class NoteController {
 
     @Autowired
     NoteService noteService;
+    @DubboReference
+    UserBehaviorService userBehaviorService;
+    @DubboReference
+    NotifyService notifyService;
+    @DubboReference
+    NotifySubscriptionService notifySubscriptionService;
 
     @RequestMapping(value = "/getLatestNote", method = RequestMethod.POST)
     public MsgEntity<PageInfo<NoteEntity>> getNoteByPage(
@@ -74,6 +90,14 @@ public class NoteController {
         noteEntity.setIsAnon(isAnon);
         noteEntity.setIsAllowComment(isAllowComment);
         NoteEntity note = noteService.createNote(noteEntity);
+
+        // 增加用户消息订阅事件：用户需要订阅自己发布的评论或回复的动态
+        List<NotifyAction> notifyActionList = new ArrayList<>();
+        notifyActionList.add(NotifyAction.LIKE_COMMENT);
+        notifyActionList.add(NotifyAction.NEW_COMMENT);
+        notifySubscriptionService.setNotifySubscription(buildUsername, notifyActionList,
+                note.getId(), NotifySubscriptionTargetType.COMMENT);
+
         return new MsgEntity<>("SUCCESS", "1", note);
     }
 
@@ -116,11 +140,32 @@ public class NoteController {
             @RequestParam String replyToUsername
     ) {
 
-        String cid = RandomStringUtils.randomAlphanumeric(8).toUpperCase();
         NoteCommentEntity noteCommentEntity = new NoteCommentEntity(noteId, userName, commentContent, replyTo, replyToUsername);
 
         noteCommentEntity.setReplyTo(replyTo);
         NoteCommentEntity noteComment = noteService.createNoteComment(noteCommentEntity);
+
+        //构建用户消息事件
+        NotifyEntity notifyEntity = new NotifyEntity(NotifyType.REMIND, userName);
+        notifyEntity.setTargetIDAndType(noteId, MainType.NOTE);
+        notifyEntity.setContent(commentContent);
+        System.out.println(replyTo);
+        System.out.println(noteId);
+        if (Objects.equals(replyTo, noteId)) { // 直接回复帖子
+            notifyEntity.setAction(NotifyAction.NEW_COMMENT);// 新评论事件不面向任何其他评论
+        } else {
+            notifyEntity.setAction(NotifyAction.NEW_REPLY);
+        }
+        notifyEntity.setCommentID(replyTo);
+        // 增加用户消息订阅事件：用户需要订阅自己发布的评论或回复的动态
+        List<NotifyAction> notifyActionList = new ArrayList<>();
+        notifyActionList.add(NotifyAction.LIKE_COMMENT);
+        notifyActionList.add(NotifyAction.NEW_REPLY);
+        notifySubscriptionService.setNotifySubscription(userName, notifyActionList,
+                replyTo, NotifySubscriptionTargetType.COMMENT);
+
+        // 产生用户消息事件
+        notifyService.addNotify(notifyEntity);
 
         return new MsgEntity<>("SUCCESS", "1", noteComment);
     }
