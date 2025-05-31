@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 
 public class PdfUtils {
 
-    private File file;
+    private final File file;
 
     public PdfUtils(File file) {
         this.file = file;

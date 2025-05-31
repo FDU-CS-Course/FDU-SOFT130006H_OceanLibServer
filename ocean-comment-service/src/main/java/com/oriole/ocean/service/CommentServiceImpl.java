@@ -248,7 +248,7 @@ public class CommentServiceImpl {
     }
 
     public enum CommentEvaluateType {
-        LIKE, DISLIKE, RECOMMEND;
+        LIKE, DISLIKE, RECOMMEND
     }
 
     //修改评论或回复评价数值

@@ -46,7 +46,7 @@ public class UserAuthGatewayFilterFactory extends AbstractGatewayFilterFactory<U
 
     public class UserAuthGatewayFilter implements GatewayFilter, Ordered {
 
-        private Config config;
+        private final Config config;
 
         public UserAuthGatewayFilter(Config config) {
             this.config = config;

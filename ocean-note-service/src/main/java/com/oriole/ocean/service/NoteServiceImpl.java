@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.oriole.ocean.common.po.mongo.FavorEntity;
 import com.oriole.ocean.common.po.mongo.UserBehaviorEntity;
 import com.oriole.ocean.common.po.mongo.comment.NoteCommentEntity;
+import com.oriole.ocean.common.service.NoteSearchSyncService;
 import com.oriole.ocean.common.service.NoteService;
 import com.oriole.ocean.dao.NoteCollectionDao;
 import com.oriole.ocean.dao.NoteCommentDao;
@@ -34,13 +35,16 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
     @Resource
     private NoteCommentDao noteCommentDao;
 
-    public boolean deleteNote(String noteID){
-        if(!noteDao.checkNoteBuilder(noteID)) {
-            return false;
-        }
+    @Autowired
+    private NoteSearchSyncService noteSearchSyncService;
 
+    public boolean isNoteCreator(String noteId, String username) {
+        return noteDao.getNoteById(noteId).getBuildUsername().equals(username);
+    }
+
+    public void deleteNote(String noteID){
+        noteSearchSyncService.deleteNoteSearchInfo(noteID);
         noteDao.deleteNote(noteID);
-        return true;
     }
 
     public NoteEntity getNoteById(String noteID) {
@@ -90,6 +94,7 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
         noteEntity.setIsDeleted((byte) 0);
 
         save(noteEntity);
+        noteSearchSyncService.saveOrUpdateNoteSearchInfo(noteEntity);
 
         return noteEntity;
     }
@@ -107,8 +112,12 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
         return noteCommentDao.getNoteCommentsByNoteId(noteId, pageNo, pageSize);
     }
 
-    public boolean deleteNoteComment(String commentId) {
-        return noteCommentDao.deleteNoteComment(commentId);
+    public boolean isCommentCreator(String commentId, String username) {
+        return noteCommentDao.getNoteComment(commentId).getNoteCommentBuildUsername().equals(username);
+    }
+
+    public void deleteNoteComment(String commentId) {
+        noteCommentDao.deleteNoteComment(commentId);
     }
 
     public FavorEntity getBehaviourByUsernameAndNoteId(String username, String noteId) {

@@ -6,7 +6,7 @@ public enum CommentStatusType {
     private final String statusName;
 
     // 构造方法
-    private CommentStatusType(String statusName) {
+    CommentStatusType(String statusName) {
         this.statusName = statusName;
     }
 
