@@ -124,7 +124,7 @@ public class UserCommentController {
             commentEntity.setBuildDate(handleTime(commentEntity.getBuildDate()));
             returnEntity = commentEntity;
             notifyEntity.setAction(NotifyAction.NEW_COMMENT);// 新评论事件不面向任何其他评论
-
+            notifyEntity.setCommentID(String.valueOf(bindID));
         } else {
             CommentReplyEntity fileCommentReplyEntity = new CommentReplyEntity(
                     replyInCommentID + "_" + cid, authUser.getUsername(),

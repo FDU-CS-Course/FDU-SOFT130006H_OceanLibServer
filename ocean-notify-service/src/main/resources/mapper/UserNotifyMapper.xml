@@ -26,7 +26,7 @@
         </if>
     </select>
 
-    <update id="readAllNotifyByUsernameAndLastPullDate">
+    <update id="readAllNotifyByUsernameAndLatestReadNotifyDate">
         UPDATE user_notify
         SET is_read = 1
         WHERE username = #{username};
