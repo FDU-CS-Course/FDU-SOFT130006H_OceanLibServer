@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oriole.ocean.dao.NoteLikeDao">
+
+    <resultMap id="noteLike" type="com.oriole.ocean.common.po.mysql.NoteLikeEntity">
+        <id property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="noteId" column="note_id" jdbcType="VARCHAR"/>
+        <result property="likeTime" column="like_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- Add a like record -->
+    <insert id="addNoteLike" parameterType="com.oriole.ocean.common.po.mysql.NoteLikeEntity">
+        INSERT INTO note_like (id, username, note_id, like_time)
+        VALUES (#{id}, #{username}, #{noteId}, #{likeTime})
+    </insert>
+
+    <!-- Remove a like record -->
+    <delete id="removeNoteLike">
+        DELETE FROM note_like 
+        WHERE username = #{username} AND note_id = #{noteId}
+    </delete>
+
+    <!-- Find a like record -->
+    <select id="findNoteLike" resultMap="noteLike">
+        SELECT id, username, note_id, like_time
+        FROM note_like
+        WHERE username = #{username} AND note_id = #{noteId}
+    </select>
+
+    <!-- Check if user has liked a note (returns boolean) -->
+    <select id="hasUserLikedNote" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM note_like
+        WHERE username = #{username} AND note_id = #{noteId}
+    </select>
+
+</mapper> 

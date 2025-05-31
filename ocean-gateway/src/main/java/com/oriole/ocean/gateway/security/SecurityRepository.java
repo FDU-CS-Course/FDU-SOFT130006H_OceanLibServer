@@ -45,6 +45,11 @@ public class SecurityRepository implements ServerSecurityContextRepository {
             authInfo.put("username", claims.get("username"));
             authInfo.put("role", claims.get("role"));
 
+            // 打印authInfo
+            System.out.println("load");
+            System.out.println(exchange.getRequest().getPath());
+            System.out.println(authInfo);
+
             /* 重设头信息 */
             exchange.getRequest().mutate().headers(httpHeaders ->
                     httpHeaders.set(HttpHeaders.AUTHORIZATION, authInfo.toString())

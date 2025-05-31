@@ -47,4 +47,11 @@ public class NoteEntity implements java.io.Serializable {
 
     @TableField("read_num")
     private Integer readNum;
+    
+    /**
+     * Whether the current user has liked this note
+     * This field is not mapped to database, only used for data transfer
+     */
+    @TableField(exist = false)
+    private Boolean isLikedByCurrentUser;
 }
