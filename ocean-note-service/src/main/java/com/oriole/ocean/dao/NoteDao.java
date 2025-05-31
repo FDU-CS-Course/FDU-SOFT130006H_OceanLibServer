@@ -13,7 +13,6 @@ public interface NoteDao extends BaseMapper<NoteEntity> {
     List<NoteEntity> getNotesByKeywords(String serchString);
     void deleteNote(String noteId);
     NoteEntity getNoteById(String noteId);
-    boolean checkNoteBuilder(String noteId);
     List<NoteEntity> getNotesByTag(String tag);
     List<NoteCommentEntity> getNoteCommentsByNoteId(String noteId);
 }

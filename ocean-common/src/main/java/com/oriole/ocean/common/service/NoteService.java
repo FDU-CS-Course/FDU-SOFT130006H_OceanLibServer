@@ -7,13 +7,15 @@ import java.util.List;
 
 public interface NoteService {
 
-    boolean deleteNote(String noteID);
+    boolean isNoteCreator(String noteId, String username);
+
+    void deleteNote(String noteID);
 
     FavorEntity favoriteNote(String username, boolean isFavor, String noteID, String id);
 
     NoteEntity getNoteById(String noteID);
 
-    boolean deleteNoteComment(String commentId);
+    void deleteNoteComment(String commentId);
 
     FavorEntity getBehaviourByUsernameAndNoteId(String username, String noteId);
 

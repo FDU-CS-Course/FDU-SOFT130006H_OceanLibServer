@@ -34,13 +34,12 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
     @Resource
     private NoteCommentDao noteCommentDao;
 
-    public boolean deleteNote(String noteID){
-        if(!noteDao.checkNoteBuilder(noteID)) {
-            return false;
-        }
+    public boolean isNoteCreator(String noteId, String username) {
+        return noteDao.getNoteById(noteId).getBuildUsername().equals(username);
+    }
 
+    public void deleteNote(String noteID){
         noteDao.deleteNote(noteID);
-        return true;
     }
 
     public NoteEntity getNoteById(String noteID) {
@@ -48,9 +47,6 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
     }
 
     public FavorEntity favoriteNote(String username, boolean isFavor, String noteID, String id){
-        if(!noteDao.checkNoteBuilder(noteID)) {
-            return null;
-        }
 
         if (isFavor) {
             FavorEntity favorEntity = new FavorEntity();
@@ -107,15 +103,16 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
         return noteCommentDao.getNoteCommentsByNoteId(noteId, pageNo, pageSize);
     }
 
-    public boolean deleteNoteComment(String commentId) {
-        return noteCommentDao.deleteNoteComment(commentId);
+    public boolean isCommentCreator(String commentId, String username) {
+        return noteCommentDao.getNoteComment(commentId).getNoteCommentBuildUsername().equals(username);
+    }
+
+    public void deleteNoteComment(String commentId) {
+        noteCommentDao.deleteNoteComment(commentId);
+        return;
     }
 
     public FavorEntity getBehaviourByUsernameAndNoteId(String username, String noteId) {
-        if (!noteDao.checkNoteBuilder(noteId)) {
-            return null;
-        }
-
         return noteCollectionDao.findByUsernameAndNoteId(username, noteId);
     }
 

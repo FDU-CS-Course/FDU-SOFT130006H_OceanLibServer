@@ -81,8 +81,9 @@ public class NoteController {
             @RequestParam String content,
             @RequestParam String tag,
             @RequestParam Byte isAnon,
-            @RequestParam Byte isAllowComment,
-            @RequestParam String buildUsername) {
+            @RequestParam Byte isAllowComment) {
+        String buildUsername = authUser.getUsername();
+
         NoteEntity noteEntity = new NoteEntity();
         noteEntity.setBuildUsername(buildUsername);
         noteEntity.setContent(content);
@@ -103,9 +104,16 @@ public class NoteController {
 
     @RequestMapping(value = "/deleteNote", method = RequestMethod.POST)
     public MsgEntity<String> deleteNote(
-            @RequestParam() String noteID) {
-        if(!noteService.deleteNote(noteID))
-            return new MsgEntity<>("FAILED", "400", "Invalid Note ID");
+            @AuthUser AuthUserEntity authUser,
+            @RequestParam String noteID) {
+        if(!noteService.isNoteCreator(noteID, authUser.getUsername())) {
+            if(authUser.isAdmin()) {
+                //TODO: Record administrator operation
+            } else {
+                return new MsgEntity<>("FAILED", "400", "Unauthorized Operation");
+            }
+        }
+        noteService.deleteNote(noteID);
         return new MsgEntity<>("SUCCESS", "1", "山本！お前の先人を犯してやる！");
     }
 
@@ -133,12 +141,13 @@ public class NoteController {
 
     @RequestMapping(value = "/createNoteComment", method = RequestMethod.POST)
     public MsgEntity<NoteCommentEntity> createNoteComment(
+            @AuthUser AuthUserEntity authUser,
             @RequestParam String noteId,
-            @RequestParam String userName,
             @RequestParam String commentContent,
             @RequestParam String replyTo,
             @RequestParam String replyToUsername
     ) {
+        String userName = authUser.getUsername();
 
         NoteCommentEntity noteCommentEntity = new NoteCommentEntity(noteId, userName, commentContent, replyTo, replyToUsername);
 
@@ -172,36 +181,43 @@ public class NoteController {
 
     @RequestMapping(value = "/deleteNoteComment", method = RequestMethod.POST)
     public MsgEntity<String> deleteNoteComment(
+            @AuthUser AuthUserEntity authUser,
             @RequestParam String _id) {
-        if(!noteService.deleteNoteComment(_id))
-            return new MsgEntity<>("FAILED", "400", "删除评论失败");
+        if(!noteService.isNoteCreator(_id, authUser.getUsername())) {
+            if(authUser.isAdmin()) {
+                //TODO: Record administrator operation
+            } else {
+                return new MsgEntity<>("FAILED", "400", "删除评论失败");
+            }
+        }
+        noteService.deleteNoteComment(_id);
         return new MsgEntity<>("SUCCESS", "1", "评论删除成功");
     }
 
     @RequestMapping(value = "/favoriteNote", method = RequestMethod.POST)
     public MsgEntity<FavorEntity> favoriteNote(
-            @RequestParam String username,
+            @AuthUser AuthUserEntity authUser,
             @RequestParam Boolean isFavor,
             @RequestParam String noteId,
             @RequestParam(required = false) String id) {
-        return new MsgEntity<>("SUCCESS", "1", noteService.favoriteNote(username, isFavor, noteId, id));
+        return new MsgEntity<>("SUCCESS", "1", noteService.favoriteNote(authUser.getUsername(), isFavor, noteId, id));
     }
 
     @RequestMapping(value = "/getBehaviourByUsernameAndNoteId", method = RequestMethod.POST)
     public MsgEntity<FavorEntity> getBehaviourByUsernameAndNoteId(
-            @RequestParam String username,
+            @AuthUser AuthUserEntity authUser,
             @RequestParam String noteId) {
-        FavorEntity favorEntity = noteService.getBehaviourByUsernameAndNoteId(username, noteId);
+        FavorEntity favorEntity = noteService.getBehaviourByUsernameAndNoteId(authUser.getUsername(), noteId);
         if (favorEntity == null) return new MsgEntity<>("SUCCESS", "2", null);
         return new MsgEntity<>("SUCCESS", "1", favorEntity);
     }
 
     @RequestMapping(value = "/getBehaviourByUsername", method = RequestMethod.POST)
     public MsgEntity<PageInfo<FavorEntity>> getBehaviourByUsername(
-            @RequestParam String username,
+            @AuthUser AuthUserEntity authUser,
             @RequestParam Integer pageNo,
             @RequestParam Integer pageSize) {
-        List<FavorEntity> collectionList = noteService.getBehaviourByUsername(username, pageNo, pageSize);
+        List<FavorEntity> collectionList = noteService.getBehaviourByUsername(authUser.getUsername(), pageNo, pageSize);
         PageInfo<FavorEntity> pageInfo = new PageInfo<>(collectionList);
         return new MsgEntity<>("SUCCESS", "1", pageInfo);
     }
