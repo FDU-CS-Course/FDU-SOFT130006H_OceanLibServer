@@ -66,16 +66,6 @@
           AND is_deleted = 0;
     </select>
 
-    <select id="checkNoteBuilder" resultType="Boolean">
-        SELECT CASE WHEN EXISTS(
-            SELECT *
-            FROM note
-            WHERE note.note_id = #{noteID}
-        ) THEN 1
-                    ELSE 0
-                   END
-    </select>
-
     <update id="deleteNote">
         UPDATE note
         SET is_deleted = 1

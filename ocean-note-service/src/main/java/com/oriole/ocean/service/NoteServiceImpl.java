@@ -52,9 +52,6 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
     }
 
     public FavorEntity favoriteNote(String username, boolean isFavor, String noteID, String id){
-        if(!noteDao.checkNoteBuilder(noteID)) {
-            return null;
-        }
 
         if (isFavor) {
             FavorEntity favorEntity = new FavorEntity();
@@ -121,10 +118,6 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
     }
 
     public FavorEntity getBehaviourByUsernameAndNoteId(String username, String noteId) {
-        if (!noteDao.checkNoteBuilder(noteId)) {
-            return null;
-        }
-
         return noteCollectionDao.findByUsernameAndNoteId(username, noteId);
     }
 

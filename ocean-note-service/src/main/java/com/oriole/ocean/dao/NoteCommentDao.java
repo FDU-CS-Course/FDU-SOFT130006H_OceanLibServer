@@ -44,4 +44,8 @@ public class NoteCommentDao {
             return false;
         }
     }
+
+    public NoteCommentEntity getNoteComment(String noteId) {
+        return mongoTemplate.findById(noteId, NoteCommentEntity.class, "note_comments");
+    }
 }
