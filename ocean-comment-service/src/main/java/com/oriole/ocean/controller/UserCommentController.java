@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.oriole.ocean.common.enumerate.BehaviorType.DO_COMMENT_LIKE;
 import static com.oriole.ocean.common.enumerate.ResultCode.SUCCESS;
 import static com.oriole.ocean.common.enumerate.ResultCode.UNAUTHORIZED_OPERATION;
 
@@ -225,6 +226,18 @@ public class UserCommentController {
         // 修改数据库
         commentService.evaluateComment(bindID, mainType, commentID, evaluates);
         return new MsgEntity<>(SUCCESS);
+    }
+
+    @RequestMapping(value = "/findEvaluateRecord", method = RequestMethod.GET)
+    public MsgEntity<Boolean> findEvaluateRecord(@AuthUser AuthUserEntity authUser,
+                                                 @RequestParam Integer bindID,
+                                                 @RequestParam MainType mainType,
+                                                 @RequestParam String commentID) {
+        UserBehaviorEntity userBehaviorEntity = new UserBehaviorEntity(bindID, mainType, authUser.getUsername(), DO_COMMENT_LIKE);
+        userBehaviorEntity.setExtraInfo(BehaviorExtraInfo.COMMENT_ID, commentID);
+
+        boolean ifExists = (userBehaviorService.findBehaviorRecord(userBehaviorEntity) != null);
+        return new MsgEntity<>("SUCCESS", "1", ifExists);
     }
 
 

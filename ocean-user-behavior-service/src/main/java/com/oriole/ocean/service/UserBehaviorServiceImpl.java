@@ -157,5 +157,4 @@ public class UserBehaviorServiceImpl implements UserBehaviorService {
         Query query = userBehavior.getQuery();
         mongoTemplate.remove(query, "user_behavior");
     }
-
 }
