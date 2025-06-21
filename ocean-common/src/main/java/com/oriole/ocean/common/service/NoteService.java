@@ -1,7 +1,7 @@
 package com.oriole.ocean.common.service;
 
 import com.oriole.ocean.common.po.mongo.FavorEntity;
-import com.oriole.ocean.common.po.mongo.comment.NoteCommentEntity;
+import com.oriole.ocean.common.po.mysql.NoteCommentEntity;
 import com.oriole.ocean.common.po.mysql.NoteEntity;
 import com.oriole.ocean.common.po.mysql.NoteLikeEntity;
 import java.util.List;
@@ -50,12 +50,6 @@ public interface NoteService {
      * @return Note entity with like status
      */
     NoteEntity getNoteByIdWithLikeStatus(String noteID, String username);
-
-    /**
-     * Delete a note comment
-     * @param commentId Comment ID
-     */
-    void deleteNoteComment(String commentId);
 
     /**
      * Get user behavior (favorites) for a specific note
@@ -125,27 +119,11 @@ public interface NoteService {
     List<NoteEntity> getNotesByTagWithLikeStatus(String tag, String username);
 
     /**
-     * Get note comments by note ID
-     * @param noteId Note ID
-     * @param pageNo Page number
-     * @param pageSize Page size
-     * @return List of note comments
-     */
-    List<NoteCommentEntity> getNoteCommentsByNoteId(String noteId, int pageNo, int pageSize);
-
-    /**
      * Create a new note
      * @param noteEntity Note entity to create
      * @return Created note entity
      */
     NoteEntity createNote(NoteEntity noteEntity);
-
-    /**
-     * Create a new note comment
-     * @param noteCommentEntity Note comment entity to create
-     * @return Created note comment entity
-     */
-    NoteCommentEntity createNoteComment(NoteCommentEntity noteCommentEntity);
 
     // === Like functionality ===
     

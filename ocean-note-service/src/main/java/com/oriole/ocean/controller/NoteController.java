@@ -8,21 +8,13 @@ import com.oriole.ocean.common.enumerate.NotifyAction;
 import com.oriole.ocean.common.enumerate.NotifySubscriptionTargetType;
 import com.oriole.ocean.common.enumerate.NotifyType;
 import com.oriole.ocean.common.po.mongo.FavorEntity;
-import com.oriole.ocean.common.po.mongo.comment.CommentEntity;
-import com.oriole.ocean.common.po.mongo.comment.CommentReplyEntity;
-import com.oriole.ocean.common.po.mongo.comment.NoteCommentEntity;
+import com.oriole.ocean.common.po.mysql.NoteCommentEntity;
 import com.oriole.ocean.common.po.mysql.NoteEntity;
 import com.oriole.ocean.common.po.mysql.NoteLikeEntity;
 import com.oriole.ocean.common.po.mysql.NotifyEntity;
-import com.oriole.ocean.common.service.NotifyService;
-import com.oriole.ocean.common.service.NotifySubscriptionService;
-import com.oriole.ocean.common.service.UserBehaviorService;
+import com.oriole.ocean.common.service.*;
 import com.oriole.ocean.common.vo.AuthUserEntity;
 import com.oriole.ocean.common.vo.MsgEntity;
-import com.oriole.ocean.common.service.NoteService;
-import com.oriole.ocean.dao.NoteCollectionDao;
-import jdk.nashorn.internal.ir.RuntimeNode;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -45,6 +36,8 @@ public class NoteController {
 
     @Autowired
     NoteService noteService;
+    @Autowired
+    NoteCommentService noteCommentService;
     @DubboReference
     UserBehaviorService userBehaviorService;
     @DubboReference
@@ -264,7 +257,7 @@ public class NoteController {
             @RequestParam Integer pageNo,
             @RequestParam Integer pageSize) {
         PageHelper.startPage(pageNo, pageSize, true);
-        List<NoteCommentEntity> noteCommentEntityList = noteService.getNoteCommentsByNoteId(noteId, pageNo, pageSize);
+        List<NoteCommentEntity> noteCommentEntityList = noteCommentService.getNoteCommentsByNoteIdWithLikeStatus(noteId);
         PageInfo<NoteCommentEntity> pageInfo = new PageInfo<>(noteCommentEntityList);
         return new MsgEntity<>("SUCCESS", "1", pageInfo);
     }
@@ -276,35 +269,35 @@ public class NoteController {
     public MsgEntity<NoteCommentEntity> createNoteComment(
             @AuthUser AuthUserEntity authUser,
             @RequestParam String noteId,
-            @RequestParam String commentContent,
-            @RequestParam String replyTo,
-            @RequestParam String replyToUsername
+            @RequestParam String content,
+            @RequestParam String replyId,
+            @RequestParam String replyUsername
     ) {
         String userName = authUser.getUsername();
 
-        NoteCommentEntity noteCommentEntity = new NoteCommentEntity(noteId, userName, commentContent, replyTo, replyToUsername);
+        NoteCommentEntity noteCommentEntity = new NoteCommentEntity(noteId, userName, content, replyId, replyUsername);
 
-        noteCommentEntity.setReplyTo(replyTo);
-        NoteCommentEntity noteComment = noteService.createNoteComment(noteCommentEntity);
+        noteCommentEntity.setReplyId(replyId);
+        NoteCommentEntity noteComment = noteCommentService.createNoteComment(noteCommentEntity);
 
         //构建用户消息事件
         NotifyEntity notifyEntity = new NotifyEntity(NotifyType.REMIND, userName);
         notifyEntity.setTargetIDAndType(noteId, MainType.NOTE);
-        notifyEntity.setContent(commentContent);
-        System.out.println(replyTo);
+        notifyEntity.setContent(content);
+        System.out.println(replyId);
         System.out.println(noteId);
-        if (Objects.equals(replyTo, noteId)) { // 直接回复帖子
+        if (Objects.equals(replyId, noteId)) { // 直接回复帖子
             notifyEntity.setAction(NotifyAction.NEW_COMMENT);// 新评论事件不面向任何其他评论
         } else {
             notifyEntity.setAction(NotifyAction.NEW_REPLY);
         }
-        notifyEntity.setCommentID(replyTo);
+        notifyEntity.setCommentID(replyId);
         // 增加用户消息订阅事件：用户需要订阅自己发布的评论或回复的动态
         List<NotifyAction> notifyActionList = new ArrayList<>();
         notifyActionList.add(NotifyAction.LIKE_COMMENT);
         notifyActionList.add(NotifyAction.NEW_REPLY);
         notifySubscriptionService.setNotifySubscription(userName, notifyActionList,
-                replyTo, NotifySubscriptionTargetType.COMMENT);
+                replyId, NotifySubscriptionTargetType.COMMENT);
 
         // 产生用户消息事件
         notifyService.addNotify(notifyEntity);
@@ -319,15 +312,20 @@ public class NoteController {
     public MsgEntity<String> deleteNoteComment(
             @AuthUser AuthUserEntity authUser,
             @RequestParam String _id) {
-        if(!noteService.isNoteCreator(_id, authUser.getUsername())) {
-            if(authUser.isAdmin()) {
-                //TODO: Record administrator operation
-            } else {
-                return new MsgEntity<>("FAILED", "400", "删除评论失败");
-            }
+        if(noteCommentService.isCommentCreator(_id, authUser.getUsername())) {
+            noteCommentService.deleteNoteComment(_id);
+            return new MsgEntity<>("SUCCESS", "1", "评论删除成功");
         }
-        noteService.deleteNoteComment(_id);
-        return new MsgEntity<>("SUCCESS", "1", "评论删除成功");
+        NoteCommentEntity noteComment = noteCommentService.getNoteComment(_id);
+        if(noteService.isNoteCreator(noteComment.getNoteId(), authUser.getUsername())) {
+            noteCommentService.deleteNoteComment(_id);
+            return new MsgEntity<>("SUCCESS", "1", "帖主删除评论成功");
+        }
+        if(authUser.isAdmin()) {
+            noteCommentService.deleteNoteComment(_id);
+            return new MsgEntity<>("SUCCESS", "1", "管理员删除评论成功");
+        }
+        return new MsgEntity<>("FAILED", "400", "删除评论失败");
     }
 
     // 收藏功能

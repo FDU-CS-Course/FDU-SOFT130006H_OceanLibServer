@@ -6,21 +6,14 @@ import com.oriole.ocean.common.enumerate.*;
 import com.oriole.ocean.common.po.mongo.UserBehaviorEntity;
 import com.oriole.ocean.common.po.mongo.comment.CommentEntity;
 import com.oriole.ocean.common.po.mongo.comment.CommentReplyEntity;
-import com.oriole.ocean.common.po.mongo.comment.NoteCommentEntity;
-import com.oriole.ocean.common.po.mysql.NoteEntity;
-import com.oriole.ocean.common.po.mysql.NotifySubscriptionEntity;
-import com.oriole.ocean.common.po.mysql.UserNotifyEntity;
 import com.oriole.ocean.common.service.NotifyService;
 import com.oriole.ocean.dao.NotifyDao;
 import com.oriole.ocean.common.po.mysql.NotifyEntity;
 import org.apache.dubbo.config.annotation.DubboService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @DubboService

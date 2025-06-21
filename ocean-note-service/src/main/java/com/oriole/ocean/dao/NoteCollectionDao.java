@@ -1,7 +1,6 @@
 package com.oriole.ocean.dao;
 
 import com.oriole.ocean.common.po.mongo.FavorEntity;
-import com.oriole.ocean.common.po.mongo.comment.NoteCommentEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

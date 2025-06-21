@@ -1,13 +1,11 @@
 package com.oriole.ocean.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.oriole.ocean.common.po.mongo.comment.NoteCommentEntity;
+import com.oriole.ocean.common.po.mysql.NoteCommentEntity;
 import com.oriole.ocean.common.po.mysql.NoteEntity;
-import com.oriole.ocean.common.po.mysql.UserNotifyEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.Date;
 import java.util.List;
 
 /**

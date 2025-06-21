@@ -2,22 +2,14 @@ package com.oriole.ocean.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.oriole.ocean.common.po.mongo.FavorEntity;
-import com.oriole.ocean.common.po.mongo.UserBehaviorEntity;
-import com.oriole.ocean.common.po.mongo.comment.NoteCommentEntity;
+import com.oriole.ocean.common.po.mysql.NoteCommentEntity;
 import com.oriole.ocean.common.po.mysql.NoteLikeEntity;
 import com.oriole.ocean.common.service.NoteService;
 import com.oriole.ocean.common.service.NotifyService;
 import com.oriole.ocean.dao.NoteCollectionDao;
-import com.oriole.ocean.dao.NoteCommentDao;
 import com.oriole.ocean.dao.NoteDao;
 import com.oriole.ocean.dao.NoteLikeDao;
 import com.oriole.ocean.common.po.mysql.NoteEntity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,15 +29,9 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
 
     @Resource
     private NoteCollectionDao noteCollectionDao;
-
-    @Resource
-    private NoteCommentDao noteCommentDao;
     
     @Resource
     private NoteLikeDao noteLikeDao;
-
-    @Resource
-    private NotifyService notifyService;
 
     /**
      * Check if user is the creator of a note
@@ -191,50 +177,6 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
         save(noteEntity);
 
         return noteEntity;
-    }
-
-    /**
-     * Create a new note comment
-     * @param noteCommentEntity Note comment entity to create
-     * @return Created note comment entity
-     */
-    public NoteCommentEntity createNoteComment(NoteCommentEntity noteCommentEntity) {
-        noteCommentEntity.setLikeNum(0);
-        noteCommentEntity.setCreateTime(new Date());
-
-        noteCommentDao.addNoteComment(noteCommentEntity);
-
-        return noteCommentEntity;
-    }
-
-    /**
-     * Get note comments by note ID
-     * @param noteId Note ID
-     * @param pageNo Page number
-     * @param pageSize Page size
-     * @return List of note comments
-     */
-    public List<NoteCommentEntity> getNoteCommentsByNoteId(String noteId, int pageNo, int pageSize) {
-        return noteCommentDao.getNoteCommentsByNoteId(noteId, pageNo, pageSize);
-    }
-
-    /**
-     * Check if user is the creator of a comment
-     * @param commentId Comment ID
-     * @param username Username to check
-     * @return true if user is creator, false otherwise
-     */
-    public boolean isCommentCreator(String commentId, String username) {
-        NoteCommentEntity comment = noteCommentDao.getNoteComment(commentId);
-        return comment != null && comment.getNoteCommentBuildUsername().equals(username);
-    }
-
-    /**
-     * Delete a note comment
-     * @param commentId Comment ID
-     */
-    public void deleteNoteComment(String commentId) {
-        noteCommentDao.deleteNoteComment(commentId);
     }
 
     /**
