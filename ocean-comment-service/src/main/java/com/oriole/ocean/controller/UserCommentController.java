@@ -116,16 +116,12 @@ public class UserCommentController {
         String cid = RandomStringUtils.randomAlphanumeric(8).toUpperCase();
         AbstractComment returnEntity;
         //构建用户消息事件
-        NotifyEntity notifyEntity = new NotifyEntity(NotifyType.REMIND,authUser.getUsername());
-        notifyEntity.setTargetIDAndType(String.valueOf(bindID),mainType);
-        notifyEntity.setContent(commentContent);
         if (!isReply) {
             CommentEntity commentEntity = new CommentEntity(cid, authUser.getUsername(), commentContent);
-            commentService.addComment(bindID, mainType, commentEntity);
             commentEntity.setBuildDate(handleTime(commentEntity.getBuildDate()));
+            commentService.addComment(bindID, mainType, commentEntity);
+            notifyService.addNotifyByComment(bindID, mainType, commentEntity);
             returnEntity = commentEntity;
-            notifyEntity.setAction(NotifyAction.NEW_COMMENT);// 新评论事件不面向任何其他评论
-            notifyEntity.setCommentID(String.valueOf(bindID));
         } else {
             CommentReplyEntity fileCommentReplyEntity = new CommentReplyEntity(
                     replyInCommentID + "_" + cid, authUser.getUsername(),
@@ -134,13 +130,12 @@ public class UserCommentController {
                     commentContent);
             commentService.addCommentReply(bindID, mainType, replyInCommentID, fileCommentReplyEntity);
             fileCommentReplyEntity.setBuildDate(handleTime(fileCommentReplyEntity.getBuildDate()));
-            returnEntity = fileCommentReplyEntity;
-            notifyEntity.setAction(NotifyAction.NEW_REPLY);
             if(!replyToCommentReplyID.isEmpty()){
-                notifyEntity.setCommentID(replyToCommentReplyID);
+                notifyService.addNotifyByReply(bindID, mainType, replyToCommentReplyID, fileCommentReplyEntity);
             }else {
-                notifyEntity.setCommentID(replyInCommentID);
+                notifyService.addNotifyByReply(bindID, mainType, replyInCommentID, fileCommentReplyEntity);
             }
+            returnEntity = fileCommentReplyEntity;
         }
         // 增加用户消息订阅事件：用户需要订阅自己发布的评论或回复的动态
         List<NotifyAction> notifyActionList = new ArrayList<>();
@@ -148,9 +143,6 @@ public class UserCommentController {
         notifyActionList.add(NotifyAction.NEW_REPLY);
         notifySubscriptionService.setNotifySubscription(authUser.getUsername(), notifyActionList,
                 returnEntity.getId(), NotifySubscriptionTargetType.COMMENT);
-
-        // 产生用户消息事件
-        notifyService.addNotify(notifyEntity);
 
         if (!isReply) {
             // 只有评论才计入文章的评论量统计
