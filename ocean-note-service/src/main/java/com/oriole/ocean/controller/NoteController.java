@@ -102,6 +102,21 @@ public class NoteController {
     }
 
     /**
+     * Select notes by creator name with pagination
+     * Returns notes with like status for authenticated user
+     */
+    @RequestMapping(value = "/getMyNotes", method = RequestMethod.POST)
+    public MsgEntity<PageInfo<NoteEntity>> getMyNotes(
+            @AuthUser AuthUserEntity authUser,
+            @RequestParam int pageNO,
+            @RequestParam int pageSize) {
+        PageHelper.startPage(pageNO, pageSize, true);
+        List<NoteEntity> noteEntityList = noteService.getNotesByUsernameWithLikeStatus(authUser.getUsername());
+        PageInfo<NoteEntity> pageInfo = new PageInfo<>(noteEntityList);
+        return new MsgEntity<>("SUCCESS","1",pageInfo);
+    }
+
+    /**
      * Get note by ID
      * Returns note with like status for authenticated user
      */

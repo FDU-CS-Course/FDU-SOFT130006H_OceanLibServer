@@ -61,7 +61,14 @@ public interface NoteDao extends BaseMapper<NoteEntity> {
      */
     List<NoteEntity> getNotesByTagWithLikeStatus(@Param("tag") String tag, 
                                                   @Param("username") String username);
-    
+
+    /**
+     * Get notes by creator name
+     * @param username Current user's name
+     * @return list of notes created by that user
+     */
+    List<NoteEntity> getNotesByMyNameWithLikeStatus(@Param("username") String username);
+
     /**
      * Get note by ID
      * @param noteId Note ID
