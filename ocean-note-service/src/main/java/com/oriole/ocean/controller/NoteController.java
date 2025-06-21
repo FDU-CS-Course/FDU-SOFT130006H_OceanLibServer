@@ -8,10 +8,7 @@ import com.oriole.ocean.common.enumerate.NotifyAction;
 import com.oriole.ocean.common.enumerate.NotifySubscriptionTargetType;
 import com.oriole.ocean.common.enumerate.NotifyType;
 import com.oriole.ocean.common.po.mongo.FavorEntity;
-import com.oriole.ocean.common.po.mysql.NoteCommentEntity;
-import com.oriole.ocean.common.po.mysql.NoteEntity;
-import com.oriole.ocean.common.po.mysql.NoteLikeEntity;
-import com.oriole.ocean.common.po.mysql.NotifyEntity;
+import com.oriole.ocean.common.po.mysql.*;
 import com.oriole.ocean.common.service.*;
 import com.oriole.ocean.common.vo.AuthUserEntity;
 import com.oriole.ocean.common.vo.MsgEntity;
@@ -204,7 +201,7 @@ public class NoteController {
     }
 
     // === Like functionality APIs ===
-    
+
     /**
      * Like or unlike a note
      * @param authUser Authenticated user
@@ -217,7 +214,7 @@ public class NoteController {
             @AuthUser AuthUserEntity authUser,
             @RequestParam String noteId,
             @RequestParam Boolean isLike) {
-        
+
         String username = authUser.getUsername();
         
         NoteLikeEntity result = noteService.likeNote(username, noteId, isLike);
@@ -237,7 +234,7 @@ public class NoteController {
 
         return new MsgEntity<>("SUCCESS", "1", "Note read successfully");
     }
-    
+
     /**
      * Check if current user has liked a specific note
      * @param authUser Authenticated user
@@ -248,10 +245,51 @@ public class NoteController {
     public MsgEntity<Boolean> checkNoteLikeStatus(
             @AuthUser AuthUserEntity authUser,
             @RequestParam String noteId) {
-        
+
         String username = authUser.getUsername();
         boolean hasLiked = noteService.hasUserLikedNote(username, noteId);
-        
+
+        return new MsgEntity<>("SUCCESS", "1", hasLiked);
+    }
+
+    /**
+     * Like or unlike a comment
+     * @param authUser Authenticated user
+     * @param commentId Comment ID to like/unlike
+     * @param isLike true to like, false to unlike
+     * @return Success message with like status
+     */
+    @RequestMapping(value = "/likeNoteComment", method = RequestMethod.POST)
+    public MsgEntity<NoteCommentLikeEntity> likeNoteComment(
+            @AuthUser AuthUserEntity authUser,
+            @RequestParam String commentId,
+            @RequestParam Boolean isLike) {
+
+        String username = authUser.getUsername();
+
+        NoteCommentLikeEntity result = noteCommentService.likeNoteComment(username, commentId, isLike);
+
+        if (isLike) {
+            return new MsgEntity<>("SUCCESS", "1", result);
+        } else {
+            return new MsgEntity<>("SUCCESS", "1", null);
+        }
+    }
+
+    /**
+     * Check if the current user has liked a specific comment
+     * @param authUser Authenticated user
+     * @param commentId Comment ID to check
+     * @return Like status
+     */
+    @RequestMapping(value = "/checkNoteCommentLikeStatus", method = RequestMethod.POST)
+    public MsgEntity<Boolean> checkNoteCommentLikeStatus(
+            @AuthUser AuthUserEntity authUser,
+            @RequestParam String commentId) {
+
+        String username = authUser.getUsername();
+        boolean hasLiked = noteCommentService.hasUserLikedNoteComment(username, commentId);
+
         return new MsgEntity<>("SUCCESS", "1", hasLiked);
     }
 
