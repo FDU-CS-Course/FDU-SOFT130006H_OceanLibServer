@@ -212,13 +212,22 @@ public class NoteController {
         
         String username = authUser.getUsername();
         
-            NoteLikeEntity result = noteService.likeNote(username, noteId, isLike);
+        NoteLikeEntity result = noteService.likeNote(username, noteId, isLike);
             
-            if (isLike) {
-                return new MsgEntity<>("SUCCESS", "1", result);
-            } else {
-                return new MsgEntity<>("SUCCESS", "1", null);
-            }
+        if (isLike) return new MsgEntity<>("SUCCESS", "1", result);
+        else return new MsgEntity<>("SUCCESS", "1", null);
+    }
+
+    @RequestMapping (value = "/readNote", method = RequestMethod.POST)
+    public MsgEntity<String> readNote(
+            @AuthUser AuthUserEntity authUser,
+            @RequestParam String noteId) {
+
+        String username = authUser.getUsername();
+
+        noteService.readNote(noteId);
+
+        return new MsgEntity<>("SUCCESS", "1", "Note read successfully");
     }
     
     /**
@@ -305,6 +314,7 @@ public class NoteController {
             @AuthUser AuthUserEntity authUser,
             @RequestParam String _id) {
         if(!noteService.isNoteCreator(_id, authUser.getUsername())) {
+            System.out.println(authUser.getUsername());
             if(authUser.isAdmin()) {
                 //TODO: Record administrator operation
             } else {

@@ -16,6 +16,11 @@ import java.util.List;
  */
 @Mapper
 public interface NoteDao extends BaseMapper<NoteEntity> {
+
+
+    String getNoteCreator(String noteID);
+
+    void readNote(String noteId);
     
     /**
      * Get latest notes
@@ -90,4 +95,6 @@ public interface NoteDao extends BaseMapper<NoteEntity> {
      * @return List of note comments
      */
     List<NoteCommentEntity> getNoteCommentsByNoteId(@Param("noteId") String noteId);
+
+    void increaseCommentCnt(@Param("noteID") String noteID);
 }

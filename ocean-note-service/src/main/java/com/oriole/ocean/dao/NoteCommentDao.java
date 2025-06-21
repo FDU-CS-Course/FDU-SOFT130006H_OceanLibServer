@@ -15,9 +15,12 @@ import java.util.List;
 public class NoteCommentDao {
     @Autowired
     private MongoTemplate mongoTemplate;
+    @Autowired
+    private NoteDao noteDao;
 
     public void addNoteComment(NoteCommentEntity noteComment) {
         mongoTemplate.save(noteComment, "note_comments");
+        noteDao.increaseCommentCnt(noteComment.getNoteId());
     }
 
     public List<NoteCommentEntity> getNoteCommentsByNoteId(String noteId, int pageNo, int pageSize) {

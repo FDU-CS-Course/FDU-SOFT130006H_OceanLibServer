@@ -50,8 +50,9 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
      * @return true if user is creator, false otherwise
      */
     public boolean isNoteCreator(String noteId, String username) {
-        NoteEntity note = noteDao.getNoteById(noteId);
-        return note != null && note.getBuildUsername().equals(username);
+        System.out.println(noteId);
+        NoteCommentEntity note = noteCommentDao.getNoteComment(noteId);
+        return note != null && note.getNoteCommentBuildUsername().equals(username);
     }
 
     /**
@@ -203,6 +204,10 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
      */
     public List<NoteCommentEntity> getNoteCommentsByNoteId(String noteId, int pageNo, int pageSize) {
         return noteCommentDao.getNoteCommentsByNoteId(noteId, pageNo, pageSize);
+    }
+
+    public void readNote(String noteId) {
+        noteDao.readNote(noteId);
     }
 
     /**
