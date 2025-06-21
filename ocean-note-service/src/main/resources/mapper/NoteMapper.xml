@@ -152,6 +152,34 @@
         WHERE n.note_id = #{noteId} AND n.is_deleted = 0
     </select>
 
+    <select id="getNotesByMyNameWithLikeStatus">
+        SELECT
+            n.note_id as id,
+            n.build_username,
+            n.content,
+            n.tag,
+            n.build_date,
+            n.refresh_date,
+            n.is_deleted,
+            n.is_anon,
+            n.is_allow_comment,
+            n.like_num,
+            n.comment_num,
+            n.read_num,
+            CASE
+                WHEN nl.username IS NOT NULL THEN
+                    1
+                ELSE
+                    0
+            END as isLikedByCurrentUser
+        FROM note n
+                 LEFT JOIN note_like nl
+                     ON n.note_id = nl.note_id
+                            AND nl.username = #{username}
+        WHERE n.is_deleted = 0 AND n.build_username = #{username}
+        ORDER BY n.refresh_date DESC;
+    </select>
+
     <update id="deleteNote">
         UPDATE note
         SET is_deleted = 1

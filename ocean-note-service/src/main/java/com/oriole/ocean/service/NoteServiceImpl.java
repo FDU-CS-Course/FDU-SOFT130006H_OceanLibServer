@@ -130,6 +130,15 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
     }
 
     /**
+     * Get notes by creator name
+     * @param username Current user's name
+     * @return list of notes created by that user
+     */
+    public List<NoteEntity> getNotesByUsernameWithLikeStatus(String username) {
+        return noteDao.getNotesByMyNameWithLikeStatus(username);
+    }
+
+    /**
      * Get notes by keywords
      * @param searchString Search keywords
      * @return List of matching notes

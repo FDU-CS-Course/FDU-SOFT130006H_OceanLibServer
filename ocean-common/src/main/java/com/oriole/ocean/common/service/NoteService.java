@@ -90,6 +90,13 @@ public interface NoteService {
     List<NoteEntity> getLatestNotesWithLikeStatus(String username);
 
     /**
+     * Get notes by creator name
+     * @param username Current user's name
+     * @return list of notes created by that user
+     */
+    List<NoteEntity> getNotesByUsernameWithLikeStatus(String username);
+
+    /**
      * Get notes by keywords
      * @param searchString Search keywords
      * @return List of matching notes
