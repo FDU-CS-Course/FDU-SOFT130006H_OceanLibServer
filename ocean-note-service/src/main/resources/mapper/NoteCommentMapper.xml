@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oriole.ocean.dao.NoteDao">
+
+    <insert id="addNoteComment" parameterType="com.oriole.ocean.common.po.mysql.NoteCommentEntity">
+        INSERT INTO note_comment
+            (id, note_id, build_username, like_num, build_date,
+             reply_id. reply_username, content, is_deleted)
+        VALUES (#{id}, #{noteId}, #{buildUsername}, 0,
+                #{build_date}, #{replyId}, #{replyUsername}, #{content}, 0)
+    </insert>
+
+    <update id="deleteNoteComment">
+        UPDATE note_comment
+        SET is_deleted = 1
+        WHERE id = #{commentId}
+    </update>
+
+    <select id="getNoteCommentsByNoteIdWithLikeStatus">
+        SELECT nc.*,
+               CASE WHEN ncl.username IS NOT NULL THEN 1 ELSE 0 END as isLikedByCurrentUser
+        FROM note_comment nc
+            LEFT JOIN note_comment_like ncl ON nc.id = ncl.comment_id AND ncl.username = #{username}
+        WHERE note_id = #{noteId}
+    </select>
+
+    <select id="getNoteComment">
+        SELECT *
+        FROM note_comment
+        WHERE id = #{commentId}
+        LIMIT 1
+    </select>
+</mapper>
