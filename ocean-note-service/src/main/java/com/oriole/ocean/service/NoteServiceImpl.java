@@ -6,6 +6,7 @@ import com.oriole.ocean.common.po.mongo.UserBehaviorEntity;
 import com.oriole.ocean.common.po.mongo.comment.NoteCommentEntity;
 import com.oriole.ocean.common.po.mysql.NoteLikeEntity;
 import com.oriole.ocean.common.service.NoteService;
+import com.oriole.ocean.common.service.NotifyService;
 import com.oriole.ocean.dao.NoteCollectionDao;
 import com.oriole.ocean.dao.NoteCommentDao;
 import com.oriole.ocean.dao.NoteDao;
@@ -42,6 +43,9 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
     
     @Resource
     private NoteLikeDao noteLikeDao;
+
+    @Resource
+    private NotifyService notifyService;
 
     /**
      * Check if user is the creator of a note

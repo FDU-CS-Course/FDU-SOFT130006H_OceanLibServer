@@ -5,6 +5,7 @@ import com.oriole.ocean.common.enumerate.BehaviorExtraInfo;
 import com.oriole.ocean.common.enumerate.BehaviorType;
 import com.oriole.ocean.common.enumerate.EvaluateType;
 import com.oriole.ocean.common.po.mongo.UserBehaviorEntity;
+import com.oriole.ocean.common.service.NotifyService;
 import com.oriole.ocean.common.service.UserBehaviorService;
 import com.oriole.ocean.common.vo.BusinessException;
 import org.apache.dubbo.config.annotation.DubboService;
@@ -31,7 +32,7 @@ public class UserBehaviorServiceImpl implements UserBehaviorService {
     private MongoTemplate mongoTemplate;
 
     @Autowired
-    private NotifyServiceImpl notifyService;
+    private NotifyService notifyService;
 
     // 检查某用户针对特定对象（某文档/某便签等）的评价行为，并得出此次评价所需发生的全部评价行为
     // 对特定对象具有评论区时，也可处理对其评论区的评价行为
