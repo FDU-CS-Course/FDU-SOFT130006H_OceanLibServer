@@ -20,6 +20,8 @@ public interface NoteService {
      */
     boolean isNoteCreator(String noteId, String username);
 
+    void readNote(String noteId);
+
     /**
      * Delete a note (soft delete)
      * @param noteID Note ID to delete

@@ -186,4 +186,23 @@
         WHERE note.note_id = #{noteID};
     </update>
 
+    <update id="readNote">
+        UPDATE note
+        SET read_num = read_num + 1
+        WHERE note.note_id = #{noteId};
+    </update>
+
+    <update id="increaseCommentCnt">
+        UPDATE note
+        SET comment_num = comment_num + 1
+        WHERE note.note_id = #{noteID};
+    </update>
+
+    <select id="getNoteCreator">
+        SELECT
+            build_username
+        FROM note
+        WHERE note_id = #{noteID};
+    </select>
+
 </mapper>
