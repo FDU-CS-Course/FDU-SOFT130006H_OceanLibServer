@@ -189,7 +189,7 @@
                      ON n.note_id = nl.note_id
                             AND nl.username = #{username}
         WHERE n.is_deleted = 0 AND n.build_username = #{username}
-        ORDER BY n.refresh_date DESC;
+        ORDER BY n.refresh_date DESC
     </select>
 
     <update id="deleteNote">

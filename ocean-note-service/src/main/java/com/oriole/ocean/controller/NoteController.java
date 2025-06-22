@@ -319,6 +319,14 @@ public class NoteController {
         return new MsgEntity<>("SUCCESS", "1", pageInfo);
     }
 
+    @RequestMapping(value = "/getNoteCommentById", method = RequestMethod.POST)
+    public MsgEntity<NoteCommentEntity> getNoteCommentById(
+            @AuthUser AuthUserEntity authUser,
+            @RequestParam String commentID) {
+
+        return new MsgEntity<>("SUCCESS", "1", noteCommentService.getNoteComment(commentID));
+    }
+
     /**
      * Create a note comment
      */
@@ -348,13 +356,14 @@ public class NoteController {
         } else {
             notifyEntity.setAction(NotifyAction.NEW_REPLY);
         }
+        System.out.println(replyId);
         notifyEntity.setCommentID(replyId);
         // 增加用户消息订阅事件：用户需要订阅自己发布的评论或回复的动态
         List<NotifyAction> notifyActionList = new ArrayList<>();
         notifyActionList.add(NotifyAction.LIKE_COMMENT);
         notifyActionList.add(NotifyAction.NEW_REPLY);
         notifySubscriptionService.setNotifySubscription(userName, notifyActionList,
-                replyId, NotifySubscriptionTargetType.COMMENT);
+                noteComment.getId(), NotifySubscriptionTargetType.COMMENT);
 
         // 产生用户消息事件
         notifyService.addNotify(notifyEntity);

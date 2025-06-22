@@ -1,6 +1,8 @@
 package com.oriole.ocean.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.oriole.ocean.common.enumerate.NotifyAction;
+import com.oriole.ocean.common.enumerate.NotifySubscriptionTargetType;
 import com.oriole.ocean.common.po.mysql.NoteCommentEntity;
 import com.oriole.ocean.common.po.mysql.NoteCommentLikeEntity;
 import com.oriole.ocean.common.service.NoteCommentService;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -47,6 +50,7 @@ public class NoteCommentServiceImpl extends ServiceImpl<NoteCommentDao, NoteComm
         noteCommentEntity.setBuildDate(new Date());
 
         noteCommentDao.addNoteComment(noteCommentEntity);
+
 
         return noteCommentEntity;
     }
