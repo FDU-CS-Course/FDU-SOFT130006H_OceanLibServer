@@ -75,20 +75,25 @@ public class UserAuthGatewayFilterFactory extends AbstractGatewayFilterFactory<U
                             JSONObject loginResponseObject = JSONObject.parseObject(responseData);
 
                             if(loginResponseObject.get("state").equals("SUCCESS") && loginResponseObject.get("code").equals("1")){
-                                JSONObject loginInfo = loginResponseObject.getJSONObject("msg");
+                                Object msgObject = loginResponseObject.get("msg");
+                                if (msgObject instanceof JSONObject) {
+                                    JSONObject loginInfo = (JSONObject) msgObject;
 
-                                Map<String, Object> chaim = new HashMap<>();
-                                chaim.put("username", loginInfo.getString("username"));
-                                chaim.put("role", loginInfo.getString("role"));
+                                    Map<String, Object> chaim = new HashMap<>();
+                                    chaim.put("username", loginInfo.getString("username"));
+                                    chaim.put("role", loginInfo.getString("role"));
 
-                                String token = jwtUtils.encode(loginInfo.getString("username"), 24 * 60 * 60 * 1000, chaim);
+                                    String token = jwtUtils.encode(loginInfo.getString("username"), 24 * 60 * 60 * 1000, chaim);
 
-                                loginResponseObject.put("msg", token);
+                                    loginResponseObject.put("msg", token);
 
-                                byte[] uppedContent = loginResponseObject.toString().getBytes();
-                                originalResponse.getHeaders().set(HttpHeaders.AUTHORIZATION, token);
-                                originalResponse.getHeaders().setContentLength(uppedContent.length);
-                                return Mono.just(bufferFactory.wrap(uppedContent));
+                                    byte[] uppedContent = loginResponseObject.toString().getBytes();
+                                    originalResponse.getHeaders().set(HttpHeaders.AUTHORIZATION, token);
+                                    originalResponse.getHeaders().setContentLength(uppedContent.length);
+                                    return Mono.just(bufferFactory.wrap(uppedContent));
+                                } else {
+                                    return Mono.just(bufferFactory.wrap(bytes));
+                                }
                             }else {
                                 originalResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
                                 return Mono.just(bufferFactory.wrap(bytes));

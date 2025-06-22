@@ -37,7 +37,7 @@ public class WebSecurityConfig {
             "/userAuth/login", //login接口是可以匿名访问的
             "/userAuth/**Login", //login接口是可以匿名访问的
             "/thirdPartLogin/**", //thirdPartLogin三方登录接口是可以匿名访问的
-            "/userInfoService/reg", //reg接口是可以匿名访问的
+            "/userAuth/reg", //reg接口是可以匿名访问的
 
             "/docInfoService/getFileInfoByFileIDWithAnon", //这个接口在文件不允许匿名访问时返回错误信息
 

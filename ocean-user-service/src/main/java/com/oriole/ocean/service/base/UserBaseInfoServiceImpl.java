@@ -30,4 +30,32 @@ public class UserBaseInfoServiceImpl extends ServiceImpl<UserDao, UserEntity> {
         }
         return userEntity;
     }
+
+    public MsgEntity<String> registerUser(String username, String password, String nickname, String phoneNum, String email) {
+        // Check if username already exists
+        UserEntity existingUser = getById(username);
+        if (existingUser != null) {
+            throw new BusinessException("-5", "Username already exists");
+        }
+        
+        // Create new user
+        UserEntity newUser = new UserEntity();
+        newUser.setUsername(username);
+        newUser.setPassword(password);
+        newUser.setNickname(nickname);
+        newUser.setPhoneNum(phoneNum);
+        newUser.setEmail(email);
+        newUser.setIsValid((byte) 0); // Set to pending review
+        newUser.setRegDate(new java.util.Date());
+        newUser.setRole("USER");
+        newUser.setLevelGrade(0);
+        
+        // Save user to database
+        boolean saved = save(newUser);
+        if (saved) {
+            return new MsgEntity<>("SUCCESS", "1", "Registration successful, waiting for admin review");
+        } else {
+            throw new BusinessException("-6", "Registration failed, please try again later");
+        }
+    }
 }
