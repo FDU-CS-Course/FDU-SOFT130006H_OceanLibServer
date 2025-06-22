@@ -52,12 +52,22 @@ public class NoteCommentServiceImpl extends ServiceImpl<NoteCommentDao, NoteComm
     }
 
     /**
-     * Get note comments by note ID
+     * Get note comments by note ID (for anonymous users)
      * @param noteId Note ID
      * @return List of note comments
      */
-    public List<NoteCommentEntity> getNoteCommentsByNoteIdWithLikeStatus(String noteId) {
-        return noteCommentDao.getNoteCommentsByNoteIdWithLikeStatus(noteId);
+    public List<NoteCommentEntity> getNoteCommentsByNoteId(String noteId) {
+        return noteCommentDao.getNoteCommentsByNoteId(noteId);
+    }
+
+    /**
+     * Get note comments by note ID with like status (for authenticated users)
+     * @param noteId Note ID
+     * @param username Current user's username
+     * @return List of note comments with like status
+     */
+    public List<NoteCommentEntity> getNoteCommentsByNoteIdWithLikeStatus(String noteId, String username) {
+        return noteCommentDao.getNoteCommentsByNoteIdWithLikeStatus(noteId, username);
     }
 
     /**

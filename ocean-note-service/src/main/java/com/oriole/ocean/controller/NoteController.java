@@ -297,14 +297,25 @@ public class NoteController {
 
     /**
      * Get note comments by note ID
+     * Returns comments with like status for authenticated user
      */
     @RequestMapping(value = "/getNoteCommentByNoteId", method = RequestMethod.POST)
     public MsgEntity<PageInfo<NoteCommentEntity>> getNoteCommentByNoteId(
+            @AuthUser AuthUserEntity authUser,
             @RequestParam String noteId,
             @RequestParam Integer pageNo,
             @RequestParam Integer pageSize) {
         PageHelper.startPage(pageNo, pageSize, true);
-        List<NoteCommentEntity> noteCommentEntityList = noteCommentService.getNoteCommentsByNoteIdWithLikeStatus(noteId);
+        
+        List<NoteCommentEntity> noteCommentEntityList;
+        if (authUser != null) {
+            // Authenticated user - include like status
+            noteCommentEntityList = noteCommentService.getNoteCommentsByNoteIdWithLikeStatus(noteId, authUser.getUsername());
+        } else {
+            // Anonymous user - without like status
+            noteCommentEntityList = noteCommentService.getNoteCommentsByNoteId(noteId);
+        }
+        
         PageInfo<NoteCommentEntity> pageInfo = new PageInfo<>(noteCommentEntityList);
         return new MsgEntity<>("SUCCESS", "1", pageInfo);
     }
@@ -316,35 +327,35 @@ public class NoteController {
     public MsgEntity<NoteCommentEntity> createNoteComment(
             @AuthUser AuthUserEntity authUser,
             @RequestParam String noteId,
-            @RequestParam String content,
-            @RequestParam String replyId,
-            @RequestParam String replyUsername
+            @RequestParam String commentContent,
+            @RequestParam String replyTo,
+            @RequestParam String replyToUsername
     ) {
         String userName = authUser.getUsername();
 
-        NoteCommentEntity noteCommentEntity = new NoteCommentEntity(noteId, userName, content, replyId, replyUsername);
+        NoteCommentEntity noteCommentEntity = new NoteCommentEntity(noteId, userName, commentContent, replyTo, replyToUsername);
 
-        noteCommentEntity.setReplyId(replyId);
+        noteCommentEntity.setReplyId(replyTo);
         NoteCommentEntity noteComment = noteCommentService.createNoteComment(noteCommentEntity);
 
         //构建用户消息事件
         NotifyEntity notifyEntity = new NotifyEntity(NotifyType.REMIND, userName);
         notifyEntity.setTargetIDAndType(noteId, MainType.NOTE);
-        notifyEntity.setContent(content);
-        System.out.println(replyId);
+        notifyEntity.setContent(commentContent);
+        System.out.println(replyTo);
         System.out.println(noteId);
-        if (Objects.equals(replyId, noteId)) { // 直接回复帖子
+        if (Objects.equals(replyTo, noteId)) { // 直接回复帖子
             notifyEntity.setAction(NotifyAction.NEW_COMMENT);// 新评论事件不面向任何其他评论
         } else {
             notifyEntity.setAction(NotifyAction.NEW_REPLY);
         }
-        notifyEntity.setCommentID(replyId);
+        notifyEntity.setCommentID(replyTo);
         // 增加用户消息订阅事件：用户需要订阅自己发布的评论或回复的动态
         List<NotifyAction> notifyActionList = new ArrayList<>();
         notifyActionList.add(NotifyAction.LIKE_COMMENT);
         notifyActionList.add(NotifyAction.NEW_REPLY);
         notifySubscriptionService.setNotifySubscription(userName, notifyActionList,
-                replyId, NotifySubscriptionTargetType.COMMENT);
+                replyTo, NotifySubscriptionTargetType.COMMENT);
 
         // 产生用户消息事件
         notifyService.addNotify(notifyEntity);

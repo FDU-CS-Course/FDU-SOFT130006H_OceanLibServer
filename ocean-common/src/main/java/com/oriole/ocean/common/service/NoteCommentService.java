@@ -9,8 +9,8 @@ import com.oriole.ocean.common.po.mysql.NoteLikeEntity;
 import java.util.List;
 
 /**
- * Note service interface
- * Provides business logic for note operations
+ * Note comment service interface
+ * Provides business logic for note comment operations
  */
 public interface NoteCommentService {
 
@@ -29,11 +29,19 @@ public interface NoteCommentService {
     void deleteNoteComment(String commentId);
 
     /**
-     * Get note comments by note ID
+     * Get note comments by note ID (for anonymous users)
      * @param noteId Note ID
      * @return List of note comments
      */
-    List<NoteCommentEntity> getNoteCommentsByNoteIdWithLikeStatus(String noteId);
+    List<NoteCommentEntity> getNoteCommentsByNoteId(String noteId);
+
+    /**
+     * Get note comments by note ID with like status (for authenticated users)
+     * @param noteId Note ID
+     * @param username Current user's username
+     * @return List of note comments with like status
+     */
+    List<NoteCommentEntity> getNoteCommentsByNoteIdWithLikeStatus(String noteId, String username);
 
     /**
      * Get note comments by comment ID
@@ -51,27 +59,27 @@ public interface NoteCommentService {
 
 
     /**
-     * Like or unlike a note
+     * Like or unlike a comment
      * @param username Username who likes/unlikes
-     * @param commentId Note ID to like/unlike
+     * @param commentId Comment ID to like/unlike
      * @param isLike true to like, false to unlike
-     * @return NoteLikeEntity if liked, null if unliked
+     * @return NoteCommentLikeEntity if liked, null if unliked
      */
     NoteCommentLikeEntity likeNoteComment(String username, String commentId, boolean isLike);
 
     /**
-     * Check if a user has liked a specific note
+     * Check if a user has liked a specific comment
      * @param username Username to check
-     * @param commentId Note ID to check
+     * @param commentId Comment ID to check
      * @return true if liked, false otherwise
      */
     boolean hasUserLikedNoteComment(String username, String commentId);
 
     /**
-     * Get like record for a user and note
+     * Get like record for a user and comment
      * @param username Username
-     * @param commentId Note ID
-     * @return NoteLikeEntity if exists, null otherwise
+     * @param commentId Comment ID
+     * @return NoteCommentLikeEntity if exists, null otherwise
      */
     NoteCommentLikeEntity getNoteCommentLike(String username, String commentId);
 }
