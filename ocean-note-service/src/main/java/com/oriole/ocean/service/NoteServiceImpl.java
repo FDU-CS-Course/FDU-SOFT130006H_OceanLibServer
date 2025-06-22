@@ -2,10 +2,8 @@ package com.oriole.ocean.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.oriole.ocean.common.po.mongo.FavorEntity;
-import com.oriole.ocean.common.po.mysql.NoteCommentEntity;
 import com.oriole.ocean.common.po.mysql.NoteLikeEntity;
 import com.oriole.ocean.common.service.NoteService;
-import com.oriole.ocean.common.service.NotifyService;
 import com.oriole.ocean.dao.NoteCollectionDao;
 import com.oriole.ocean.dao.NoteDao;
 import com.oriole.ocean.dao.NoteLikeDao;
@@ -41,8 +39,8 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
      */
     public boolean isNoteCreator(String noteId, String username) {
         System.out.println(noteId);
-        NoteCommentEntity note = noteCommentDao.getNoteComment(noteId);
-        return note != null && note.getNoteCommentBuildUsername().equals(username);
+        NoteEntity note = noteDao.getNoteById(noteId);
+        return note != null && note.getBuildUsername().equals(username);
     }
 
     /**
