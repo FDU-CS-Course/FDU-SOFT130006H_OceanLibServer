@@ -17,7 +17,7 @@ spring:
         - id: login
           uri: lb://ocean-user-service
           predicates:
-            - Path=/userAuth/login
+            - Path=/userAuth/login,/userAuth/reg
           filters:
             - UserAuth
         - id: user # 路由规则id，自定义，唯一

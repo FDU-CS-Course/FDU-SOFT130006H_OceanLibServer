@@ -25,4 +25,9 @@ public class AuthController {
         return new MsgEntity<>("SUCCESS","1", userEntity);
     }
 
+    @RequestMapping(value = "/reg", method = RequestMethod.POST)
+    public MsgEntity<String> register(@RequestParam String username, @RequestParam String password, @RequestParam(required = false) String nickname, @RequestParam(required = false) String phoneNum, @RequestParam(required = false) String email) {
+        return userBaseInfoService.registerUser(username, password, nickname, phoneNum, email);
+    }
+
 }

@@ -188,6 +188,15 @@ public class UserCommentController {
         return new MsgEntity<>("SUCCESS", "1", commentEntity);
     }
 
+    @RequestMapping(value = "/getCommentReplyByCommentReplyID", method = RequestMethod.GET)
+    public MsgEntity<CommentReplyEntity> getCommentReplyByCommentReplyID(
+            @RequestParam Integer bindID,
+            @RequestParam MainType mainType,
+            @RequestParam String commentReplyID) {
+        CommentReplyEntity commentReplyEntity = commentService.getCommentReplyByCommentReplyID(bindID, mainType, commentReplyID);
+        return new MsgEntity<>("SUCCESS", "1", commentReplyEntity);
+    }
+
     @RequestMapping(value = "/getCommentReply", method = RequestMethod.GET)
     public MsgEntity<CommentEntity> getCommentReply(
             @RequestParam Integer bindID,
