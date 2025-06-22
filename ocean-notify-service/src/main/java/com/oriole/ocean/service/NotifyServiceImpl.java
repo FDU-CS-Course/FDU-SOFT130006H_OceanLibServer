@@ -26,7 +26,7 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyDao, NotifyEntity> impl
     public void addNotifyByComment(Integer bindID, MainType mainType,
                                    CommentEntity fileCommentEntity){
         NotifyEntity notifyEntity = new NotifyEntity(NotifyType.REMIND, fileCommentEntity.getCommentBuildUsername());
-        notifyEntity.setTargetID(bindID.toString());
+        notifyEntity.setTargetId(bindID.toString());
         notifyEntity.setTargetType(mainType);
         notifyEntity.setContent(fileCommentEntity.getCommentContent());
         notifyEntity.setAction(NotifyAction.NEW_COMMENT);
@@ -36,7 +36,7 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyDao, NotifyEntity> impl
     public void addNotifyByReply(Integer bindID, MainType mainType,
                                  String replyInCommentID, CommentReplyEntity fileCommentReplyEntity){
         NotifyEntity notifyEntity = new NotifyEntity(NotifyType.REMIND, fileCommentReplyEntity.getReplyBuildUsername());
-        notifyEntity.setTargetID(bindID.toString());
+        notifyEntity.setTargetId(bindID.toString());
         notifyEntity.setTargetType(mainType);
         notifyEntity.setCommentID(replyInCommentID);
         notifyEntity.setContent(fileCommentReplyEntity.getCommentContent());
@@ -54,30 +54,21 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyDao, NotifyEntity> impl
                 notifyEntity.setAction(NotifyAction.DOWNLOAD);
                 break;
             case DO_LIKE:
-                add_or_remove = true;
+                add_or_remove = !userBehaviorEntity.getIsCancel();
                 notifyEntity.setAction(NotifyAction.LIKE);
                 notifyEntity.setContent(userBehaviorEntity.getDoUsername() + "点赞了你的帖子");
                 break;
-            case DO_DISLIKE:
-                add_or_remove = false;
-                notifyEntity.setAction(NotifyAction.LIKE);
-                break;
             case DO_COMMENT_LIKE:
-                add_or_remove = true;
+                add_or_remove = !userBehaviorEntity.getIsCancel();
                 notifyEntity.setAction(NotifyAction.LIKE_COMMENT);
                 notifyEntity.setCommentID((String) userBehaviorEntity.getExtraInfo(BehaviorExtraInfo.COMMENT_ID));
                 notifyEntity.setContent(userBehaviorEntity.getDoUsername() + "点赞了你的评论");
-                break;
-            case DO_COMMENT_DISLIKE:
-                add_or_remove = false;
-                notifyEntity.setAction(NotifyAction.LIKE_COMMENT);
-                notifyEntity.setCommentID((String) userBehaviorEntity.getExtraInfo(BehaviorExtraInfo.COMMENT_ID));
                 break;
             default:
                 return;
         }
         notifyEntity.setUserBehaviorID(userBehaviorEntity.getId());
-        notifyEntity.setTargetIDAndType(String.valueOf(userBehaviorEntity.getBindID()),userBehaviorEntity.getType());
+        notifyEntity.setTargetIdAndType(String.valueOf(userBehaviorEntity.getBindID()),userBehaviorEntity.getType());
         if(add_or_remove)
             addNotify(notifyEntity);
         else
@@ -86,7 +77,7 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyDao, NotifyEntity> impl
 
     private void removeNotify(NotifyEntity notifyEntity) {
         NotifyDao notifyDao = getBaseMapper();
-        notifyDao.removeNotify(notifyEntity);
+        notifyDao.removeNotify(notifyEntity.getTargetId(),notifyEntity.getTargetType(),notifyEntity.getCommentID(), notifyEntity.getAction(),notifyEntity.getBuildUsername());
     }
 
     // 查询指定时间之后产生的所有消息

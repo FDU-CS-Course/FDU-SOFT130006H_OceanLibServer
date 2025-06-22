@@ -347,7 +347,7 @@ public class NoteController {
 
         //构建用户消息事件
         NotifyEntity notifyEntity = new NotifyEntity(NotifyType.REMIND, userName);
-        notifyEntity.setTargetIDAndType(noteId, MainType.NOTE);
+        notifyEntity.setTargetIdAndType(noteId, MainType.NOTE);
         notifyEntity.setContent(content);
         System.out.println(replyId);
         System.out.println(noteId);

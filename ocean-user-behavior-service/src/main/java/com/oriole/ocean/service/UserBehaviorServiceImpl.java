@@ -84,10 +84,12 @@ public class UserBehaviorServiceImpl implements UserBehaviorService {
         for (EvaluateType evaluate : evaluates) {
             switch (evaluate) {
                 case CANCEL_LIKE:
+                    userBehavior.setIsCancel(true);
                 case LIKE:
                     userBehavior.setBehaviorType(isForComment ? BehaviorType.DO_COMMENT_LIKE : BehaviorType.DO_LIKE);
                     break;
                 case CANCEL_DISLIKE:
+                    userBehavior.setIsCancel(true);
                 case DISLIKE:
                     userBehavior.setBehaviorType(isForComment ? BehaviorType.DO_COMMENT_DISLIKE : BehaviorType.DO_DISLIKE);
                     break;
@@ -148,6 +150,8 @@ public class UserBehaviorServiceImpl implements UserBehaviorService {
     }
 
     public void deleteBehaviorRecord(UserBehaviorEntity userBehavior) {
+        notifyService.addNotifyByBehaviorRecord(userBehavior);
+        userBehavior.setIsCancel(false); // bull shit
         Query query = userBehavior.getQuery();
         Update update = new Update();
         update.set("isCancel", true);
