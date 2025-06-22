@@ -45,6 +45,10 @@ public class NoteServiceImpl extends ServiceImpl<NoteDao, NoteEntity> implements
         return note != null && note.getBuildUsername().equals(username);
     }
 
+    public void changeNoteCommentNum(String noteId, int value) {
+        noteDao.changeNoteCommentNum(noteId, value);
+    }
+
     /**
      * Delete a note (soft delete)
      * @param noteID Note ID to delete

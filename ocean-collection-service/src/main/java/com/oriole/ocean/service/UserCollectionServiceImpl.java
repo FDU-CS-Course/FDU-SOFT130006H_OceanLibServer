@@ -69,9 +69,8 @@ public class UserCollectionServiceImpl {
         AggregationResults<UserCollectionEntity.CollectionEntity> results = mongoTemplate.aggregate(aggregation,
                 getCollectionName(mainType), UserCollectionEntity.CollectionEntity.class);
 
-        if (results.getMappedResults() == null) {
-            return null;
-        }
+        System.out.println(results.getMappedResults());
+        if (results.getMappedResults().isEmpty()) return null;
         return results.getMappedResults().get(0);
     }
 

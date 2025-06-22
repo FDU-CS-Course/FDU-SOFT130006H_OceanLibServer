@@ -3,9 +3,11 @@ package com.oriole.ocean.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.oriole.ocean.common.po.mysql.NoteCommentEntity;
 import com.oriole.ocean.common.po.mysql.NoteEntity;
+import com.oriole.ocean.common.po.mysql.UserNotifyEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -15,11 +17,10 @@ import java.util.List;
 @Mapper
 public interface NoteDao extends BaseMapper<NoteEntity> {
 
-
-    String getNoteCreator(String noteID);
-
     void readNote(String noteId);
-    
+
+    void changeNoteCommentNum(String noteId, int value);
+
     /**
      * Get latest notes
      * @return List of latest notes
@@ -100,6 +101,4 @@ public interface NoteDao extends BaseMapper<NoteEntity> {
      * @return List of note comments
      */
     List<NoteCommentEntity> getNoteCommentsByNoteId(@Param("noteId") String noteId);
-
-    void increaseCommentCnt(@Param("noteID") String noteID);
 }

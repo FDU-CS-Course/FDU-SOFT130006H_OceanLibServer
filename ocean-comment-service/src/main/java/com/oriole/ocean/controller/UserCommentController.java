@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.xml.stream.events.Comment;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -118,9 +119,9 @@ public class UserCommentController {
         //构建用户消息事件
         if (!isReply) {
             CommentEntity commentEntity = new CommentEntity(cid, authUser.getUsername(), commentContent);
-            commentEntity.setBuildDate(handleTime(commentEntity.getBuildDate()));
             commentService.addComment(bindID, mainType, commentEntity);
             notifyService.addNotifyByComment(bindID, mainType, commentEntity);
+            commentEntity.setBuildDate(handleTime(commentEntity.getBuildDate()));
             returnEntity = commentEntity;
         } else {
             CommentReplyEntity fileCommentReplyEntity = new CommentReplyEntity(
@@ -129,12 +130,12 @@ public class UserCommentController {
                     replyToCommentReplyID,
                     commentContent);
             commentService.addCommentReply(bindID, mainType, replyInCommentID, fileCommentReplyEntity);
-            fileCommentReplyEntity.setBuildDate(handleTime(fileCommentReplyEntity.getBuildDate()));
             if(!replyToCommentReplyID.isEmpty()){
                 notifyService.addNotifyByReply(bindID, mainType, replyToCommentReplyID, fileCommentReplyEntity);
             }else {
                 notifyService.addNotifyByReply(bindID, mainType, replyInCommentID, fileCommentReplyEntity);
             }
+            fileCommentReplyEntity.setBuildDate(handleTime(fileCommentReplyEntity.getBuildDate()));
             returnEntity = fileCommentReplyEntity;
         }
         // 增加用户消息订阅事件：用户需要订阅自己发布的评论或回复的动态
@@ -176,6 +177,15 @@ public class UserCommentController {
         }
         commentsListEntity.setComments(commentEntities);
         return new MsgEntity<>("SUCCESS", "1", commentsListEntity);
+    }
+
+    @RequestMapping(value = "/getCommentById", method = RequestMethod.GET)
+    public MsgEntity<CommentEntity> getCommentById(
+            @RequestParam Integer bindID,
+            @RequestParam MainType mainType,
+            @RequestParam String commentID) {
+        CommentEntity commentEntity = commentService.getCommentByCommentID(bindID, mainType, commentID);
+        return new MsgEntity<>("SUCCESS", "1", commentEntity);
     }
 
     @RequestMapping(value = "/getCommentReply", method = RequestMethod.GET)

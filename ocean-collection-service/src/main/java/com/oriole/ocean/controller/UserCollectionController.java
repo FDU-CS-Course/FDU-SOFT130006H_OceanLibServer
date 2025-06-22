@@ -16,6 +16,7 @@ import com.oriole.ocean.service.UserCollectionServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -77,16 +78,20 @@ public class UserCollectionController {
         // 需要一并清空用户的收藏情况记录
         for (Integer itemID : collectionEntity.getItems()) { // 遍历被删除的收藏夹中的文件对应用户行为记录
             UserBehaviorEntity userBehaviorEntityQuery = new UserBehaviorEntity(itemID, mainType, username, BehaviorType.DO_COLLECTION);
-            JSONArray collectionList = (JSONArray) userBehaviorService.findBehaviorRecord(userBehaviorEntityQuery).getExtraInfo(IN_COLLECTION);
 
-            collectionList.remove(collectionID);
-            if (collectionList.isEmpty()) {//所有的收藏已经被全部删除了
-                // 移除收藏量统计
-                userCollectionService.collectionStatisticsChange(itemID, "-1", mainType);
-                // 移除用户行为记录
-                userBehaviorService.deleteBehaviorRecord(userBehaviorEntityQuery);
-            } else { // 还有收藏记录存在，更新记录
-                userBehaviorService.updateBehaviorRecordExtraInfo(userBehaviorEntityQuery, IN_COLLECTION, collectionList);
+            Object extraInfo = userBehaviorService.findBehaviorRecord(userBehaviorEntityQuery).getExtraInfo(IN_COLLECTION);
+            if (extraInfo instanceof List<?>) {
+                List<String> collectionList = (List<String>) extraInfo;
+                collectionList.removeIf(id -> id.equals(collectionID));
+
+                if (collectionList.isEmpty()) {//所有的收藏已经被全部删除了
+                    // 移除文件收藏量统计
+                    userCollectionService.collectionStatisticsChange(itemID, "-1", mainType);
+                    // 移除用户行为记录
+                    userBehaviorService.deleteBehaviorRecord(userBehaviorEntityQuery);
+                } else { // 还有收藏记录存在，更新记录
+                    userBehaviorService.updateBehaviorRecordExtraInfo(userBehaviorEntityQuery, IN_COLLECTION, collectionList);
+                }
             }
         }
         return new MsgEntity<>(SUCCESS);
@@ -148,11 +153,10 @@ public class UserCollectionController {
 
     @RequestMapping(value = "/deleteCollectionItem", method = RequestMethod.GET)
     public MsgEntity<String> deleteCollectedItem(@AuthUser AuthUserEntity authUser,
-                                                 @RequestParam(required = false) String username,
                                                  @RequestParam String collectionID,
                                                  @RequestParam Integer itemID,
                                                  @RequestParam MainType mainType) {
-        username = authUser.getAllowOperationUsername(username);
+        String username = authUser.getUsername();
 
         Integer removedItemID = userCollectionService.deleteOneCollectionItem(username, collectionID, itemID, mainType);
         if (removedItemID == null) {
@@ -160,16 +164,20 @@ public class UserCollectionController {
         }
         // 进行到了此处说明肯定有删除发生
         UserBehaviorEntity userBehaviorEntityQuery = new UserBehaviorEntity(itemID, mainType, username, BehaviorType.DO_COLLECTION);
-        JSONArray collectionList = (JSONArray) userBehaviorService.findBehaviorRecord(userBehaviorEntityQuery).getExtraInfo(IN_COLLECTION);
-        collectionList.remove(collectionID);
 
-        if (collectionList.isEmpty()) {//所有的收藏已经被全部删除了
-            // 移除文件收藏量统计
-            userCollectionService.collectionStatisticsChange(itemID, "-1", mainType);
-            // 移除用户行为记录
-            userBehaviorService.deleteBehaviorRecord(userBehaviorEntityQuery);
-        } else { // 还有收藏记录存在，更新记录
-            userBehaviorService.updateBehaviorRecordExtraInfo(userBehaviorEntityQuery, IN_COLLECTION, collectionList);
+        Object extraInfo = userBehaviorService.findBehaviorRecord(userBehaviorEntityQuery).getExtraInfo(IN_COLLECTION);
+        if (extraInfo instanceof List<?>) {
+            List<String> collectionList = (List<String>) extraInfo;
+            collectionList.removeIf(id -> id.equals(collectionID));
+
+            if (collectionList.isEmpty()) {//所有的收藏已经被全部删除了
+                // 移除文件收藏量统计
+                userCollectionService.collectionStatisticsChange(itemID, "-1", mainType);
+                // 移除用户行为记录
+                userBehaviorService.deleteBehaviorRecord(userBehaviorEntityQuery);
+            } else { // 还有收藏记录存在，更新记录
+                userBehaviorService.updateBehaviorRecordExtraInfo(userBehaviorEntityQuery, IN_COLLECTION, collectionList);
+            }
         }
         return new MsgEntity<>(SUCCESS);
     }
@@ -182,6 +190,7 @@ public class UserCollectionController {
         username = authUser.getAllowOperationUsername(username);
 
         UserCollectionEntity.CollectionEntity collectionEntity = userCollectionService.getCollectionByUsernameAndCollectionID(username, collectionID, mainType);
+        if (collectionEntity == null) return new MsgEntity<>("SUCCESS", "2", null);
         return new MsgEntity<>("SUCCESS", "1", collectionEntity.getItems());
     }
 }

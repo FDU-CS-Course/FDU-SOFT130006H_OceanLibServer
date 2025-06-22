@@ -12,6 +12,8 @@ import java.util.List;
  */
 public interface NoteService {
 
+    void changeNoteCommentNum(String noteId, int value);
+
     /**
      * Check if user is the creator of a note
      * @param noteId Note ID
